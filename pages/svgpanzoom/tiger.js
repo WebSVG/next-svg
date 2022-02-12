@@ -4,12 +4,19 @@ import Script from 'next/script'
 import {    Paper, Grid,Box, Divider,
   Typography, Slider,  Stack } from '@mui/material';
 
+//Limitation - only works on first page reload with path, switching btween pages render it inactive
+//loss of panzoomRef
+
 export default function Home() {
   const elementRef = useRef(null);
   const panzoomRef = useRef(null);
+  const height = 300
 
   // Set up panzoom on mount, and dispose on unmount
   useEffect(() => {
+    if(typeof svgPanZoom !== "undefined"){
+      panzoomRef.current = svgPanZoom(elementRef.current);
+    }
     return () => {
       if(panzoomRef.current){
         panzoomRef.current.destroy();
@@ -18,7 +25,7 @@ export default function Home() {
   }, []);
   return (
       <>
-        <Script src='/dist/svg-pan-zoom.js'
+        <Script src='/dist/svg-pan-zoom.min.js'
           onLoad={() => {
             if(typeof window !== "undefined"){
               panzoomRef.current = svgPanZoom(elementRef.current);
@@ -31,12 +38,8 @@ export default function Home() {
       </Head>
       <Box id="mainContent" m={1}>
         <Paper elevation={3} >
-          <Box id="allCard" px={2} pt={1}>
-            <svg ref={elementRef}>
-              <g id='scene'> 
-                <circle cx='10' cy='10' r='5' fill='pink'></circle>
-              </g>
-            </svg>
+        <Box id="allCard" px={2} pt={1} sx={{ height:height,width:1100, overflow: 'hidden' }}>
+            <embed type="image/svg+xml" src="/tiger.svg" ref={elementRef} id="my-embed"/>
           </Box>
         </Paper>
       </Box>
