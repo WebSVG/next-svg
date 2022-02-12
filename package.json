@@ -2,7 +2,7 @@
   "private": true,
   "scripts": {
     "dev": "next dev",
-    "build": "next build",
+    "build": "next build && next export",
     "start": "next start"
   },
   "dependencies": {
@@ -11,9 +11,14 @@
     "@mui/material": "^5.4.1",
     "@react-hook/window-size": "^3.0.7",
     "next": "latest",
+    "panzoom": "^9.4.2",
     "react": "17.0.2",
     "react-dom": "17.0.2",
     "react-svg-pan-zoom": "^3.11.0",
-    "react-svg-pan-zoom-loader": "^1.4.1"
+    "react-svg-pan-zoom-loader": "^1.4.1",
+    "svg-pan-zoom": "^3.6.1"
+  },
+  "devDependencies": {
+    "@svgr/webpack": "^6.2.1"
   }
 }

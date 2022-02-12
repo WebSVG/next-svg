@@ -5,7 +5,17 @@ import {Button} from '@mui/material';
 import Typography from '@mui/material/Typography';
 import Link from 'next/link'
 
-const pages = ['demo','tiger','auto']
+const pages = [
+    {'name':'home'     ,'href':'tiger'},
+    {'name':'svg'     ,'href':'svg'},
+    {'name':'boxed'     ,'href':'panzoom/boxed'},
+    {'name':'fitted'    ,'href':'panzoom/fitted'},
+    {'name':'panzoom'   ,'href':'panzoom/panzoom'},
+    {'name':'img'       ,'href':'panzoom/img'},
+    {'name':'r_simple','href':'rsvg/simple'},
+    {'name':'r_tiger' ,'href':'rsvg/tiger'},
+    {'name':'r_auto'  ,'href':'rsvg/auto'}
+]
 
 
 export default function Nav() {
@@ -14,10 +24,10 @@ export default function Nav() {
         <AppBar position="static">
             <Toolbar>
                 {pages.map((page,index)=>(
-                    <Link href={`/${page}`} key={index}>
+                    <Link href={`/${page.href}`} key={index}>
                         <Button sx={{ my: 2, color: 'white', display: 'block' }}>
                             <Typography variant="h6" component="div" sx={{ flexGrow: 1 }}>
-                                {page}
+                                {page.name}
                             </Typography>
                         </Button>
                     </Link>          
