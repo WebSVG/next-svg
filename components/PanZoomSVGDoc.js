@@ -1,11 +1,12 @@
 import Head from 'next/head'
-import React, { useRef, useEffect } from 'react';
+import React, { useRef, useState, useEffect } from 'react';
 import panzoom from 'panzoom';
 import {    Paper, Grid,Box, Divider,
   Typography, Slider,  Stack, Item, Button } from '@mui/material';
 
 import { SVG } from '@svgdotjs/svg.js'
-export default function PanZoom({children}) {
+export default function PanZoom({children,loaded}) {
+  const [started, setStarted] = useState(false)
   const height = 400
   let fit_height_zoom = 0
   let svg_width = 0
@@ -13,26 +14,53 @@ export default function PanZoom({children}) {
   const elementRef = useRef(null);
   const panzoomRef = useRef(null);
 
-  useEffect(() => {
-    panzoomRef.current = panzoom(elementRef.current, { minZoom: .25,maxZoom: 4});
-    let svg = elementRef.current.getElementsByTagName('svg')[0]
+  function startSVG(){
+    let object = elementRef.current.getElementsByTagName('object')[0]
+    console.log(object)
+    if(object){
+      let doc = object.getSVGDocument()
+    }
+    if(doc){
+      let svg = doc.getElementsByTagName('svg')[0]
+      console.log(svg)
+    }else{
+      console.log(doc)
+    }
     if(svg){
+      panzoomRef.current = panzoom(elementRef.current, { minZoom: .25,maxZoom: 4});
       svg_height = svg.getAttributeNS(null,"height")
       svg_width = svg.getAttributeNS(null,"width")
+      setStarted(true)
     }else{
-      console.log(elementRef.current)      
       svg_height = 600
       svg_width = 800
     }
     fit_height_zoom = height/svg_height
     FitHeight()
-      return () => {panzoomRef.current.dispose();}
-  }, []);
+      return () => {
+        if(panzoomRef.current){
+          panzoomRef.current.dispose();
+        }
+      }
+  }
+
+  console.log(`loaded is : '${loaded}'`)
+
+  useEffect(() => {
+    if(loaded){
+      if(!started){
+        startSVG()
+      }
+    }
+  }, [loaded]);
   function Reset(e){
+    if(! panzoomRef.current) return
+
     panzoomRef.current.dispose();
     panzoomRef.current = panzoom(elementRef.current, { minZoom: .25,maxZoom: 4});
   }
   function FitHeight(e){
+    if(! panzoomRef.current) return
     Reset()
     let offsetX = document.getElementById("allCard").clientWidth/2 - svg_width/2
     let offsetY = document.getElementById("allCard").clientHeight/2 - svg_height/2
@@ -43,6 +71,7 @@ export default function PanZoom({children}) {
     panzoomRef.current.zoomAbs(zoomX, zoomY, fit_height_zoom);
   }
   function FitWidth(e){
+    if(! panzoomRef.current) return
     Reset()
     let offsetX = document.getElementById("allCard").clientWidth/2 - svg_width/2
     let offsetY = document.getElementById("allCard").clientHeight/2 - svg_height/2
