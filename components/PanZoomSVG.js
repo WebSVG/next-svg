@@ -1,17 +1,38 @@
 import Head from 'next/head'
 import React, { useRef, useState, useEffect } from 'react';
 import panzoom from 'panzoom';
-import {    Paper, Grid,Box, Divider,
+import {    Paper, Modal,Box, Divider,
   Typography, Slider,  Stack, Item, Button } from '@mui/material';
 
 
 import { SVG as SVGjs } from '@svgdotjs/svg.js'
 import SVG from 'react-inlinesvg';
 
+const style = {
+  position: 'absolute',
+  top: '50%',
+  left: '50%',
+  transform: 'translate(-50%, -50%)',
+  width: "90vw",
+  height: "80vh",
+  bgcolor: 'background.paper',
+  border: '2px solid #000',
+  boxShadow: 24,
+  p: 4,
+  overflow: 'hidden'
+};
+
+
 export default function PanZoom({src}) {
   const [started, setStarted] = useState(false)
   const [loaded, setLoaded] = useState(false)
+  
+  const [open, setOpen] = React.useState(false);
+  const handleOpen = () => setOpen(true);
+  const handleClose = () => setOpen(false);
+
   const height = 400
+  const minZoom = 0.1
   const boxRef = useRef(null);
   const elementRef = useRef(null);
   const panzoomRef = useRef(null);
@@ -25,7 +46,7 @@ export default function PanZoom({src}) {
     function startSVG(){
     let svg = elementRef.current.getElementsByTagName('svg')[0]
     if(svg){
-      panzoomRef.current = panzoom(elementRef.current, { minZoom: .25,maxZoom: 4});
+      panzoomRef.current = panzoom(elementRef.current, { minZoom: minZoom,maxZoom: 4});
     }else{
       console.warn("not svg, fetching width height not supported yet, set fixed to 800,600")
     }
@@ -47,7 +68,7 @@ export default function PanZoom({src}) {
   function Reset(e){
     if(! panzoomRef.current) return
     panzoomRef.current.dispose();
-    panzoomRef.current = panzoom(elementRef.current, { minZoom: .25,maxZoom: 4});
+    panzoomRef.current = panzoom(elementRef.current, { minZoom: minZoom,maxZoom: 4});
 
   }
   function softReset(e){
@@ -101,34 +122,6 @@ export default function PanZoom({src}) {
     panzoomRef.current.zoomAbs(zoomX, zoomY, fit_height_zoom);
     //console.log(`zoomAbs (${zoomX},${zoomY},${fit_height_zoom})`)
   }
-  function FitHeightNo(e){
-    if(! panzoomRef.current) return
-    Reset()
-    let svg = elementRef.current.getElementsByTagName('svg')[0]
-    //let cbox = svg.getBoundingClientRect();
-    let {svg_width, svg_height} = get_svg_size()
-    let scale = boxRef.current.clientWidth / svg_width
-    if(svg.hasAttributeNS(null,"width")){
-      let client_width = svg.getAttributeNS(null,"width")
-      if(client_width.endsWith("px")){
-        client_width = Number(client_width.slice(0,-2))
-      }
-      scale = client_width / svg_width
-    }
-
-    let offsetY         = boxRef.current.clientHeight/2 - (svg_height*scale)/2
-    let offsetX         = boxRef.current.clientWidth/2 - (svg_width*scale)/2
-    panzoomRef.current.moveTo(offsetX, offsetY);
-    console.log(`moveto (${offsetX},${offsetY})`)
-
-    let zoomX           = boxRef.current.clientWidth/2
-    let zoomY           = boxRef.current.clientHeight/2
-    let fit_height_zoom  = boxRef.current.clientHeight/svg_height
-    //panzoomRef.current.zoomTo(zoomX, zoomY, scale);
-    //console.log(`zoomTo (${zoomX},${zoomY}, ${scale})`)
-    panzoomRef.current.zoomAbs(zoomX, zoomY, fit_height_zoom);
-    console.log(`zoomAbs (${zoomX},${zoomY},${fit_height_zoom})`)
-  }
   function FitWidth(e){
     if(! panzoomRef.current) return
     Reset()
@@ -179,6 +172,7 @@ export default function PanZoom({src}) {
         <Button  onClick={Reset} variant="contained">Reset</Button>
         <Button  onClick={Center} variant="contained">Center</Button>
         <Button  onClick={TestSVGjs} variant="contained">Test SVG.js</Button>
+        <Button onClick={handleOpen} variant="contained">Open modal</Button>
     </Stack>
     <Box id="mainContent" m={1} >
         <Paper elevation={3} >
@@ -189,6 +183,18 @@ export default function PanZoom({src}) {
                 </Box>
         </Paper>
     </Box>
+    <Modal
+        open={open}
+        onClose={handleClose}
+        aria-labelledby="modal-modal-title"
+        aria-describedby="modal-modal-description"
+      >
+        <Box sx={style} >
+          <div >
+            <SVG src={src} onLoad={()=>{setLoaded(true)}}/>
+          </div>
+      </Box>
+      </Modal>
     </Stack>
   )
 }
