@@ -76,15 +76,30 @@ export default function PanZoom({src}) {
   }
   function FitHeight(e){
     if(! panzoomRef.current) return
-    Center()
+    Reset()
     let svg = elementRef.current.getElementsByTagName('svg')[0]
-    let cbox = svg.getBoundingClientRect();
+    //let cbox = svg.getBoundingClientRect();
     let {svg_width, svg_height} = get_svg_size()
+    let scale = boxRef.current.clientWidth / svg_width
+    if(svg.hasAttributeNS(null,"width")){
+      let client_width = svg.getAttributeNS(null,"width")
+      if(client_width.endsWith("px")){
+        client_width = Number(client_width.slice(0,-2))
+      }
+      scale = client_width / svg_width
+    }
+    //console.log(`scale = ${scale}`)
+    let offsetY         = boxRef.current.clientHeight/2 - (svg_height*scale)/2
+    let offsetX         = boxRef.current.clientWidth/2 - (svg_width*scale)/2
+    panzoomRef.current.moveTo(offsetX, offsetY);
+    //console.log(`moveTo (${offsetX},${offsetY})`)
+
+    let cbox = svg.getBoundingClientRect();
     let zoomX           = boxRef.current.clientWidth/2
     let zoomY           = boxRef.current.clientHeight/2
-    let fit_height_zoom  = boxRef.current.clientHeight/svg_height
+    let fit_height_zoom  = boxRef.current.clientHeight/(svg_height*scale)
     panzoomRef.current.zoomAbs(zoomX, zoomY, fit_height_zoom);
-    console.log(`zoomAbs (${zoomX},${zoomY},${fit_height_zoom})`)
+    //console.log(`zoomAbs (${zoomX},${zoomY},${fit_height_zoom})`)
   }
   function FitHeightNo(e){
     if(! panzoomRef.current) return
@@ -116,11 +131,26 @@ export default function PanZoom({src}) {
   }
   function FitWidth(e){
     if(! panzoomRef.current) return
-    Center()
+    Reset()
     let svg = elementRef.current.getElementsByTagName('svg')[0]
-    let cbox = svg.getBoundingClientRect();
+    //let cbox = svg.getBoundingClientRect();
     let {svg_width, svg_height} = get_svg_size()
-    let fit_width_zoom  = boxRef.current.clientWidth/svg_width
+    let scale = boxRef.current.clientWidth / svg_width
+    if(svg.hasAttributeNS(null,"width")){
+      let client_width = svg.getAttributeNS(null,"width")
+      if(client_width.endsWith("px")){
+        client_width = Number(client_width.slice(0,-2))
+      }
+      scale = client_width / svg_width
+    }
+    //console.log(`scale = ${scale}`)
+    let offsetY         = boxRef.current.clientHeight/2 - (svg_height*scale)/2
+    let offsetX         = boxRef.current.clientWidth/2 - (svg_width*scale)/2
+    panzoomRef.current.moveTo(offsetX, offsetY);
+    //console.log(`moveTo (${offsetX},${offsetY})`)
+
+    let cbox = svg.getBoundingClientRect();
+    let fit_width_zoom  = boxRef.current.clientWidth/(svg_width*scale)
     let zoomX           = boxRef.current.clientWidth/2
     let zoomY           = boxRef.current.clientHeight/2
     panzoomRef.current.zoomAbs(zoomX, zoomY, fit_width_zoom);
