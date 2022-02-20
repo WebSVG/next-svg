@@ -1,9 +1,11 @@
 import Head from 'next/head'
 import PanZoomSVG from '../components/PanZoomSVG'
-import SVG from 'react-inlinesvg';
 import {useState} from 'react';
 
 const svg_list =[
+  'tiger2.svg',
+  'tiger.svg',
+  'vintage-flourish-divider-7.svg',
   'nRF52.svg',
 ]
 
@@ -17,9 +19,7 @@ export default function PanZoom() {
       <link rel="icon" href="/favicon.ico" />
       </Head>
       {svg_list.map((file,index)=>
-        <PanZoomSVG key={index} loaded={loaded}>
-          <SVG src={file} onLoad={()=>{setLoaded(true)}}/>
-        </PanZoomSVG>
+        <PanZoomSVG key={index} src={file}/>
       )}
     </>
   )

@@ -27,3 +27,9 @@ testing svg viewing as a react component on next js
     * cannot be imported in nextjs due to usage of window (front end only) in the module
     * Browser only integration needs to return with a `Script` tag referencing a manually copied .js
     * svg does not pan all over the parent but in the firstly defined creation window
+
+# SVG files
+* files with top svg element containing width and height attributes will have fixed default width and height
+* svg files without and with viwBox only will have responsive width
+* `svg.getBoundingClientRect();` does not react immediatly so that right after calls to `zoomAbs()` or `moveTo()` the returned value is the old one before the calls. One way to solve this is to avoid using it and precompute what the returned value is supposed to be depdning on if the top svg has a fixed width or fits to parent width
+

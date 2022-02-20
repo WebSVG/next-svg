@@ -3,37 +3,38 @@ import React, { useRef, useState, useEffect } from 'react';
 import panzoom from 'panzoom';
 import {    Paper, Grid,Box, Divider,
   Typography, Slider,  Stack, Item, Button } from '@mui/material';
-import { SVG } from '@svgdotjs/svg.js'
 
-export default function PanZoom({children, loaded}) {
+
+import { SVG as SVGjs } from '@svgdotjs/svg.js'
+import SVG from 'react-inlinesvg';
+
+export default function PanZoom({src}) {
   const [started, setStarted] = useState(false)
+  const [loaded, setLoaded] = useState(false)
   const height = 400
-  let fit_height_zoom = 0
-  let svg_width = 0
-  let svg_height = 0
+  const boxRef = useRef(null);
   const elementRef = useRef(null);
   const panzoomRef = useRef(null);
 
-  function startSVG(){
+  function get_svg_size(){
+    let svg = elementRef.current.getElementsByTagName('svg')[0]
+    let bbox = svg.getBBox();
+    return {svg_width:bbox.width,svg_height:bbox.height}
+  }
+
+    function startSVG(){
     let svg = elementRef.current.getElementsByTagName('svg')[0]
     if(svg){
       panzoomRef.current = panzoom(elementRef.current, { minZoom: .25,maxZoom: 4});
-      svg_height = svg.getAttributeNS(null,"height")
-      svg_width = svg.getAttributeNS(null,"width")
     }else{
-      svg_height = 600
-      svg_width = 800
+      console.warn("not svg, fetching width height not supported yet, set fixed to 800,600")
     }
-    fit_height_zoom = height/svg_height
-    FitHeight()
       return () => {
         if(panzoomRef.current){
           panzoomRef.current.dispose();
         }
       }
   }
-
-  console.log(`loaded is : '${loaded}'`)
 
   useEffect(() => {
     if(loaded){
@@ -45,38 +46,94 @@ export default function PanZoom({children, loaded}) {
   }, [loaded]);
   function Reset(e){
     if(! panzoomRef.current) return
-
     panzoomRef.current.dispose();
     panzoomRef.current = panzoom(elementRef.current, { minZoom: .25,maxZoom: 4});
+
+  }
+  function softReset(e){
+    if(! panzoomRef.current) return
+    panzoomRef.current.zoomAbs(0, 0, 1);
+    panzoomRef.current.moveTo(0, 0);
+  }
+  function Center(e){
+    if(! panzoomRef.current) return
+    Reset()
+    let svg = elementRef.current.getElementsByTagName('svg')[0]
+    //let cbox = svg.getBoundingClientRect();
+    let {svg_width, svg_height} = get_svg_size()
+    let scale = boxRef.current.clientWidth / svg_width
+    if(svg.hasAttributeNS(null,"width")){
+      let client_width = svg.getAttributeNS(null,"width")
+      if(client_width.endsWith("px")){
+        client_width = Number(client_width.slice(0,-2))
+      }
+      scale = client_width / svg_width
+    }
+    let offsetY         = boxRef.current.clientHeight/2 - (svg_height*scale)/2
+    let offsetX         = boxRef.current.clientWidth/2 - (svg_width*scale)/2
+    panzoomRef.current.moveTo(offsetX, offsetY);
+    console.log(`moveto (${offsetX},${offsetY})`)
   }
   function FitHeight(e){
     if(! panzoomRef.current) return
-    Reset()
-    let offsetX = document.getElementById("allCard").clientWidth/2 - svg_width/2
-    let offsetY = document.getElementById("allCard").clientHeight/2 - svg_height/2
-    let zoomX = document.getElementById("allCard").clientWidth/2
-    let zoomY = document.getElementById("allCard").clientHeight/2
-    let fit_height_zoom = document.getElementById("allCard").clientHeight/svg_height
-    panzoomRef.current.moveTo(offsetX, offsetY);
+    Center()
+    let svg = elementRef.current.getElementsByTagName('svg')[0]
+    let cbox = svg.getBoundingClientRect();
+    let {svg_width, svg_height} = get_svg_size()
+    let zoomX           = boxRef.current.clientWidth/2
+    let zoomY           = boxRef.current.clientHeight/2
+    let fit_height_zoom  = boxRef.current.clientHeight/svg_height
     panzoomRef.current.zoomAbs(zoomX, zoomY, fit_height_zoom);
+    console.log(`zoomAbs (${zoomX},${zoomY},${fit_height_zoom})`)
+  }
+  function FitHeightNo(e){
+    if(! panzoomRef.current) return
+    Reset()
+    let svg = elementRef.current.getElementsByTagName('svg')[0]
+    //let cbox = svg.getBoundingClientRect();
+    let {svg_width, svg_height} = get_svg_size()
+    let scale = boxRef.current.clientWidth / svg_width
+    if(svg.hasAttributeNS(null,"width")){
+      let client_width = svg.getAttributeNS(null,"width")
+      if(client_width.endsWith("px")){
+        client_width = Number(client_width.slice(0,-2))
+      }
+      scale = client_width / svg_width
+    }
+
+    let offsetY         = boxRef.current.clientHeight/2 - (svg_height*scale)/2
+    let offsetX         = boxRef.current.clientWidth/2 - (svg_width*scale)/2
+    panzoomRef.current.moveTo(offsetX, offsetY);
+    console.log(`moveto (${offsetX},${offsetY})`)
+
+    let zoomX           = boxRef.current.clientWidth/2
+    let zoomY           = boxRef.current.clientHeight/2
+    let fit_height_zoom  = boxRef.current.clientHeight/svg_height
+    //panzoomRef.current.zoomTo(zoomX, zoomY, scale);
+    //console.log(`zoomTo (${zoomX},${zoomY}, ${scale})`)
+    panzoomRef.current.zoomAbs(zoomX, zoomY, fit_height_zoom);
+    console.log(`zoomAbs (${zoomX},${zoomY},${fit_height_zoom})`)
   }
   function FitWidth(e){
     if(! panzoomRef.current) return
-    Reset()
-    let offsetX = document.getElementById("allCard").clientWidth/2 - svg_width/2
-    let offsetY = document.getElementById("allCard").clientHeight/2 - svg_height/2
-    let zoomX = document.getElementById("allCard").clientWidth/2
-    let zoomY = document.getElementById("allCard").clientHeight/2
-    let fit_width_zoom = document.getElementById("allCard").clientWidth/svg_width
-    panzoomRef.current.moveTo(offsetX, offsetY);
+    Center()
+    let svg = elementRef.current.getElementsByTagName('svg')[0]
+    let cbox = svg.getBoundingClientRect();
+    let {svg_width, svg_height} = get_svg_size()
+    let fit_width_zoom  = boxRef.current.clientWidth/svg_width
+    let zoomX           = boxRef.current.clientWidth/2
+    let zoomY           = boxRef.current.clientHeight/2
     panzoomRef.current.zoomAbs(zoomX, zoomY, fit_width_zoom);
   }
   function TestSVGjs(e){
     let svg = elementRef.current.getElementsByTagName('svg')[0]
     if(svg){
-      let draw = SVG(svg)
+      let draw = SVGjs(svg)
       draw.rect(100, 100).fill('#f06')
-      draw.findOne('text').fill('#f06')
+      let text = draw.findOne('text')
+      if(text){
+        text.fill('#f06')
+      }
     }
   }
   return (
@@ -89,13 +146,15 @@ export default function PanZoom({children, loaded}) {
     >
         <Button  onClick={FitHeight} variant="contained">Fit Height</Button>
         <Button  onClick={FitWidth} variant="contained">Fit Width</Button>
+        <Button  onClick={Reset} variant="contained">Reset</Button>
+        <Button  onClick={Center} variant="contained">Center</Button>
         <Button  onClick={TestSVGjs} variant="contained">Test SVG.js</Button>
     </Stack>
     <Box id="mainContent" m={1} >
         <Paper elevation={3} >
-            <Box id="allCard" sx={{ height:height, overflow: 'hidden' }}>
+            <Box ref={boxRef} sx={{ height:height, overflow: 'hidden' }}>
                 <div ref={elementRef}>
-                  {children}
+                  <SVG src={src} onLoad={()=>{setLoaded(true)}}/>
                 </div>
                 </Box>
         </Paper>

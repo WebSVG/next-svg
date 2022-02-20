@@ -20,7 +20,7 @@ export default function PanZoom({children}) {
       svg_height = svg.getAttributeNS(null,"height")
       svg_width = svg.getAttributeNS(null,"width")
     }else{
-      console.log(elementRef.current)      
+      //console.log(elementRef.current)      
       svg_height = 600
       svg_width = 800
     }
