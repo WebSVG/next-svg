@@ -48,9 +48,6 @@ export default function PanZoom({src}) {
     }
     let svg = elementRef.current.getElementsByTagName('svg')[0]
     if(svg){
-      let div = document.getElementById("tiger")
-      console.log(`startSVG div = ${div}`)
-      console.log(div)
       panzoomRef.current = panzoom(elementRef.current, { minZoom,maxZoom: 4});
       started.current = true
       console.log("created Modal pan zoom")
