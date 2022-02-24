@@ -4,6 +4,8 @@ import panzoom from 'panzoom';
 import {    Paper, Modal,Box, Divider,
   Typography, Slider,  Stack, Item, Button } from '@mui/material';
 
+import PanZoomModal from '../components/PanZoomModal'
+import * as utl from './svg_utils'
 
 import { SVG as SVGjs } from '@svgdotjs/svg.js'
 import SVG from 'react-inlinesvg';
@@ -22,12 +24,13 @@ const style = {
   overflow: 'hidden'
 };
 
+//https://medium.com/@teh_builder/ref-objects-inside-useeffect-hooks-eb7c15198780
 
 export default function PanZoom({src}) {
   const [started, setStarted] = useState(false)
   const [loaded, setLoaded] = useState(false)
   
-  const [open, setOpen] = React.useState(false);
+  const [open, setOpen] = useState(false);
   const handleOpen = () => setOpen(true);
   const handleClose = () => setOpen(false);
 
@@ -37,38 +40,53 @@ export default function PanZoom({src}) {
   const elementRef = useRef(null);
   const panzoomRef = useRef(null);
 
+
+  function startSVG(){
+    console.log(elementRef.current)
+    if(!elementRef.current){
+      return
+    }
+    let svg = elementRef.current.getElementsByTagName('svg')[0]
+    if(svg){
+      let div = document.getElementById("tiger")
+      console.log(`startSVG div = ${div}`)
+      console.log(div)
+      panzoomRef.current = panzoom(elementRef.current, { minZoom,maxZoom: 4});
+      setStarted(true)
+      console.log("created Modal pan zoom")
+    }else{
+      console.warn("not svg, fetching width height not supported yet, set fixed to 800,600")
+    }
+      return () => { stopSVG() }
+  }
+  function stopSVG(){
+    console.log(`Modal: stopSVG panzoomRef.current=${panzoomRef.current}`)
+    if(panzoomRef.current){
+      panzoomRef.current.dispose();
+      setStarted(false)
+      console.log(`Modal: disposed`)
+    }
+  }
   function get_svg_size(){
     let svg = elementRef.current.getElementsByTagName('svg')[0]
     let bbox = svg.getBBox();
     return {svg_width:bbox.width,svg_height:bbox.height}
   }
-
-    function startSVG(){
-    let svg = elementRef.current.getElementsByTagName('svg')[0]
-    if(svg){
-      panzoomRef.current = panzoom(elementRef.current, { minZoom: minZoom,maxZoom: 4});
-    }else{
-      console.warn("not svg, fetching width height not supported yet, set fixed to 800,600")
-    }
-      return () => {
-        if(panzoomRef.current){
-          panzoomRef.current.dispose();
-        }
-      }
-  }
-
+  
   useEffect(() => {
     if(loaded){
       if(!started){
-        startSVG()
+        startSVG(elementRef.current,panzoomRef.current,minZoom)
         setStarted(true)
       }
     }
   }, [loaded]);
   function Reset(e){
+    console.log(panzoomRef.current)
     if(! panzoomRef.current) return
     panzoomRef.current.dispose();
     panzoomRef.current = panzoom(elementRef.current, { minZoom: minZoom,maxZoom: 4});
+    console.log("reset")
 
   }
   function softReset(e){
@@ -167,11 +185,11 @@ export default function PanZoom({src}) {
         spacing={2}
         justifyContent="center"
     >
-        <Button  onClick={FitHeight} variant="contained">Fit Height</Button>
-        <Button  onClick={FitWidth} variant="contained">Fit Width</Button>
-        <Button  onClick={Reset} variant="contained">Reset</Button>
-        <Button  onClick={Center} variant="contained">Center</Button>
-        <Button  onClick={TestSVGjs} variant="contained">Test SVG.js</Button>
+        <Button onClick={FitHeight} variant="contained">Fit Height</Button>
+        <Button onClick={FitWidth} variant="contained">Fit Width</Button>
+        <Button onClick={Reset} variant="contained">Reset</Button>
+        <Button onClick={Center} variant="contained">Center</Button>
+        <Button onClick={TestSVGjs} variant="contained">Test SVG.js</Button>
         <Button onClick={handleOpen} variant="contained">Open modal</Button>
     </Stack>
     <Box id="mainContent" m={1} >
@@ -180,21 +198,10 @@ export default function PanZoom({src}) {
                 <div ref={elementRef}>
                   <SVG src={src} onLoad={()=>{setLoaded(true)}}/>
                 </div>
-                </Box>
+            </Box>
         </Paper>
     </Box>
-    <Modal
-        open={open}
-        onClose={handleClose}
-        aria-labelledby="modal-modal-title"
-        aria-describedby="modal-modal-description"
-      >
-        <Box sx={style} >
-          <div >
-            <SVG src={src} onLoad={()=>{setLoaded(true)}}/>
-          </div>
-      </Box>
-      </Modal>
+    <PanZoomModal src={src} open={open} handleClose={handleClose}/>
     </Stack>
   )
 }
