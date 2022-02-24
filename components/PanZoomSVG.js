@@ -10,22 +10,6 @@ import * as utl from './svg_utils'
 import { SVG as SVGjs } from '@svgdotjs/svg.js'
 import SVG from 'react-inlinesvg';
 
-const style = {
-  position: 'absolute',
-  top: '50%',
-  left: '50%',
-  transform: 'translate(-50%, -50%)',
-  width: "90vw",
-  height: "80vh",
-  bgcolor: 'background.paper',
-  border: '2px solid #000',
-  boxShadow: 24,
-  p: 4,
-  overflow: 'hidden'
-};
-
-//https://medium.com/@teh_builder/ref-objects-inside-useeffect-hooks-eb7c15198780
-
 export default function PanZoom({src}) {
   const started = useRef(false)
   const [loaded, setLoaded] = useState(false)
@@ -42,7 +26,6 @@ export default function PanZoom({src}) {
 
 
   function startSVG(){
-    console.log(elementRef.current)
     if(!elementRef.current){
       return
     }
@@ -190,10 +173,10 @@ export default function PanZoom({src}) {
         <Button onClick={handleOpen} variant="contained">Open modal</Button>
     </Stack>
     <Box id="mainContent" m={1} >
-        <Paper elevation={3} >
+        <Paper elevation={3}>
             <Box ref={boxRef} sx={{ height:height, overflow: 'hidden' }}>
-                <div ref={elementRef}>
-                  <SVG src={src} onLoad={()=>{setLoaded(true)}}/>
+                <div ref={elementRef} >
+                  <SVG src={src} onLoad={()=>{setLoaded(true)}} />
                 </div>
             </Box>
         </Paper>

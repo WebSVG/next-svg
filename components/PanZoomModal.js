@@ -28,7 +28,6 @@ export default function PanZoom({src,open,handleClose}) {
   
   const minZoom = 0.1
   const panzoomRef = useRef(null);
-  const elementSvg = useRef(null);
   const elementDiv = useCallback(node=>{
     console.log(`Modal: loaded = ${loaded} ; started.current = ${started.current} ; node = ${node}`)
     if(node != null){
@@ -38,17 +37,9 @@ export default function PanZoom({src,open,handleClose}) {
     }},[loaded,open]);
 
   function startSVG(node){
-    console.log(node)
-    if(!node){
-      return
-    }
-    //if(elementDiv.current){
-      panzoomRef.current = panzoom(node, { minZoom,maxZoom: 4});
-      started.current=true
-      console.log("created Modal pan zoom")
-    //}else{
-    //  console.log(elementDiv.current)
-    //}
+    panzoomRef.current = panzoom(node, { minZoom,maxZoom: 4});
+    started.current=true
+    console.log("created Modal pan zoom")
       return () => { stopSVG() }
   }
   function stopSVG(){
@@ -60,17 +51,6 @@ export default function PanZoom({src,open,handleClose}) {
     }
   }
   
-//  useEffect(() => {
-//    console.log(`Modal: loaded = ${loaded} ; started.current = ${started.current} ; panzoomRef.current = ${panzoomRef.current}`)
-//    if(loaded){
-//      if(!started.current){
-//        setTimeout(() => {
-//          startSVG()
-//        }, 500);
-//      }
-//    }
-//  }, [loaded,open]);
-
   return (
       <Modal
       open={open}
@@ -80,7 +60,7 @@ export default function PanZoom({src,open,handleClose}) {
     >
       <Box sx={style} >
         <div ref={elementDiv} id="tiger">
-          <SVG ref={elementSvg} src={src} onLoad={()=>{setLoaded(true)}}/>
+          <SVG src={src} onLoad={()=>{setLoaded(true)}}/>
         </div>
       </Box>
     </Modal>
