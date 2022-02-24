@@ -27,7 +27,7 @@ const style = {
 //https://medium.com/@teh_builder/ref-objects-inside-useeffect-hooks-eb7c15198780
 
 export default function PanZoom({src}) {
-  const [started, setStarted] = useState(false)
+  const started = useRef(false)
   const [loaded, setLoaded] = useState(false)
   
   const [open, setOpen] = useState(false);
@@ -52,7 +52,7 @@ export default function PanZoom({src}) {
       console.log(`startSVG div = ${div}`)
       console.log(div)
       panzoomRef.current = panzoom(elementRef.current, { minZoom,maxZoom: 4});
-      setStarted(true)
+      started.current = true
       console.log("created Modal pan zoom")
     }else{
       console.warn("not svg, fetching width height not supported yet, set fixed to 800,600")
@@ -63,7 +63,7 @@ export default function PanZoom({src}) {
     console.log(`Modal: stopSVG panzoomRef.current=${panzoomRef.current}`)
     if(panzoomRef.current){
       panzoomRef.current.dispose();
-      setStarted(false)
+      started.current = false
       console.log(`Modal: disposed`)
     }
   }
@@ -75,9 +75,9 @@ export default function PanZoom({src}) {
   
   useEffect(() => {
     if(loaded){
-      if(!started){
+      if(!started.current){
         startSVG(elementRef.current,panzoomRef.current,minZoom)
-        setStarted(true)
+        started.current = true
       }
     }
   }, [loaded]);

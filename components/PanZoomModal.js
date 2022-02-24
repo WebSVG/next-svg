@@ -23,7 +23,7 @@ const style = {
 };
 
 export default function PanZoom({src,open,handleClose}) {
-  const [started, setStarted] = useState(false)
+  const started = useRef(false)
   const [loaded, setLoaded] = useState(false)
   
   const minZoom = 0.1
@@ -41,7 +41,7 @@ export default function PanZoom({src,open,handleClose}) {
       console.log(`startSVG div = ${div}`)
       console.log(div)
       panzoomRef.current = panzoom(elementRef.current, { minZoom,maxZoom: 4});
-      setStarted(true)
+      started.current=true
       console.log("created Modal pan zoom")
     }else{
       console.warn("not svg, fetching width height not supported yet, set fixed to 800,600")
@@ -52,15 +52,15 @@ export default function PanZoom({src,open,handleClose}) {
     console.log(`Modal: stopSVG panzoomRef.current=${panzoomRef.current}`)
     if(panzoomRef.current){
       panzoomRef.current.dispose();
-      setStarted(false)
+      started.current=false
       console.log(`Modal: disposed`)
     }
   }
   
   useEffect(() => {
-    console.log(`Modal: loaded = ${loaded} ; started = ${started} ; panzoomRef.current = ${panzoomRef.current}`)
+    console.log(`Modal: loaded = ${loaded} ; started.current = ${started.current} ; panzoomRef.current = ${panzoomRef.current}`)
     if(loaded){
-      if(!started){
+      if(!started.current){
         setTimeout(() => {
           startSVG()
         }, 500);
