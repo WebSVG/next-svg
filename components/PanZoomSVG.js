@@ -1,12 +1,15 @@
 import React, { useRef, useState, useEffect} from 'react';
 import panzoom from 'panzoom';
 import {    Paper, Box, Divider, Stack, Button } from '@mui/material';
-
 import PanZoomModal from '../components/PanZoomModal'
 import * as utl from './svg_utils'
-
 import { SVG as SVGjs } from '@svgdotjs/svg.js'
 import SVG from 'react-inlinesvg';
+import FullscreenIcon from '@mui/icons-material/Fullscreen';
+import EditIcon from '@mui/icons-material/Edit';
+import CloseIcon from '@mui/icons-material/Close';
+import FitScreenIcon from '@mui/icons-material/FitScreen';
+import ArrowUpwardIcon from '@mui/icons-material/ArrowUpward';
 
 export default function PanZoom({src}) {
   const started = useRef(false)
@@ -76,16 +79,16 @@ export default function PanZoom({src}) {
         justifyContent="center"
     >
         <Button onClick={()=>{onMouseDown();utl.Fit(panzoomRef.current,divRef.current,boxRef.current)}}
-                variant="contained">Fit</Button>
+                variant="text"><FitScreenIcon/> fit</Button>
         <Button onClick={()=>{onMouseDown();utl.Top(panzoomRef.current,divRef.current,boxRef.current)}}
-                variant="contained">Top</Button>
+                variant="text"><ArrowUpwardIcon/></Button>
         <Button onClick={(e)=>{stopPZ();setActive(false)}}
-                variant="contained">Stop</Button>
-        <Button onClick={TestSVGjs} variant="contained">Test SVG.js</Button>
-        <Button onClick={()=>{setOpen(true)}} variant="contained">Open modal</Button>
+                variant="text"><CloseIcon/></Button>
+        <Button onClick={TestSVGjs} variant="text"><EditIcon/></Button>
+        <Button onClick={()=>{setOpen(true)}} variant="text"><FullscreenIcon/></Button>
     </Stack>
-    <Box id="mainContent" m={1} sx={{border: active?'1px solid':'0px', cursor:active?'grab':'default' }}>
-        <Paper elevation={active?5:2}>
+    <Box id="mainContent" m={1} sx={{border: active?'2px solid':'0px', cursor:'grab'}}>
+        <Paper elevation={active?10:2}>
             <Box ref={boxRef} 
                  sx={{  height:boxHeight, overflow: 'hidden'}}>
                 <div ref={divRef} >
