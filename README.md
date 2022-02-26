@@ -24,7 +24,7 @@ svg pan zoom as a react component on next js with adjustment buttons and Modal
 * handle images not SVGs only
 
 ## Limitations
-* touch generates Chrome : "Intervention unable to preventdefault inside passive event"
+* in Chrome touch generates : "Intervention unable to preventdefault inside passive event"
 * cursor `grab` does not show on first mouse down and drag, only after release
 * timeout of 1 ms needed for second Modal open otherwise svg is undefined
 # Code description
