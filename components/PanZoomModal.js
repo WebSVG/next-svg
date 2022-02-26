@@ -29,7 +29,7 @@ export default function PanZoom({src,open,handleClose}) {
   const minZoom = 0.1
   const panzoomRef = useRef(null);
   const elementDiv = useCallback(node=>{
-    console.log(`Modal: loaded = ${loaded} ; started.current = ${started.current} ; node = ${node}`)
+    //console.log(`Modal: loaded = ${loaded} ; started.current = ${started.current} ; node = ${node}`)
     if(node != null){
       if(loaded){
         if(!started.current){startSVG(node)}
@@ -39,22 +39,22 @@ export default function PanZoom({src,open,handleClose}) {
   function startSVG(node){
     panzoomRef.current = panzoom(node, { minZoom,maxZoom: 4});
     started.current=true
-    console.log("created Modal pan zoom")
+    console.log("Modal pan zoom : created")
       return () => { stopSVG() }
   }
   function stopSVG(){
-    console.log(`Modal: stopSVG panzoomRef.current=${panzoomRef.current}`)
+    //console.log(`Modal: stopSVG panzoomRef.current=${panzoomRef.current}`)
     if(panzoomRef.current){
       panzoomRef.current.dispose();
       started.current=false
-      console.log(`Modal: disposed`)
+      console.log(`Modal pan zoom : disposed`)
     }
   }
   
   return (
       <Modal
       open={open}
-      onClose={()=>{console.log("Modal handling close"); stopSVG();handleClose();}}
+      onClose={()=>{stopSVG();handleClose();}}
       aria-labelledby="modal-modal-title"
       aria-describedby="modal-modal-description"
     >

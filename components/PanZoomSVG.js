@@ -1,5 +1,5 @@
 import Head from 'next/head'
-import React, { useRef, useState, useEffect } from 'react';
+import React, { useRef, useState, useEffect, useCallback } from 'react';
 import panzoom from 'panzoom';
 import {    Paper, Modal,Box, Divider,
   Typography, Slider,  Stack, Item, Button } from '@mui/material';
@@ -13,45 +13,42 @@ import SVG from 'react-inlinesvg';
 export default function PanZoom({src}) {
   const started = useRef(false)
   const [loaded, setLoaded] = useState(false)
-  
   const [open, setOpen] = useState(false);
-  const handleClose = () => setOpen(false);
 
-  const height = 400
+  const boxHeight = 400
   const zoomOptions = {minZoom: 0.1, maxZoom:4}
   const boxRef = useRef(null);
-  const elementDiv = useRef(null);
+  const divRef = useRef(null);
   const panzoomRef = useRef(null);
 
-
   function startPZ(){
-    if(!elementDiv.current){
-      return
+    if(loaded && divRef.current && !started.current){
+      panzoomRef.current = panzoom(divRef.current, zoomOptions);
+      started.current = true
+      console.log("pan zoom : created")
     }
-    panzoomRef.current = panzoom(elementDiv.current, zoomOptions);
-    started.current = true
-    console.log("created Modal pan zoom")
-    return () => { stopPZ() }
   }
   function stopPZ(){
-    console.log(`Modal: stopPZ panzoomRef.current=${panzoomRef.current}`)
-    if(panzoomRef.current){
+    //console.log(`stopPZ panzoomRef.current=${panzoomRef.current}`)
+    if((started.current) && (panzoomRef.current)){
       panzoomRef.current.dispose();
       started.current = false
-      console.log(`Modal: disposed`)
+      if(divRef.current){
+        divRef.current.removeEventListener("mouseenter",startPZ)
+      }
+      console.log(`pan zoom : disposed`)
     }
   }
   
   useEffect(() => {
-    if(loaded){
-      if(!started.current){
-        startPZ()
-        started.current = true
-      }
+    if(loaded && divRef.current){
+      console.log("adding listener")
+      divRef.current.addEventListener("mouseenter", startPZ)
     }
+    return () => { stopPZ() }
   }, [loaded]);
   function TestSVGjs(e){
-    let svg = elementDiv.current.getElementsByTagName('svg')[0]
+    let svg = divRef.current.getElementsByTagName('svg')[0]
     if(svg){
       let draw = SVGjs(svg)
       draw.rect(100, 100).fill('#f06')
@@ -69,27 +66,27 @@ export default function PanZoom({src}) {
         spacing={2}
         justifyContent="center"
     >
-        <Button onClick={()=>{utl.FitHeight(panzoomRef.current,elementDiv.current,boxRef.current)}}
+        <Button onClick={()=>{utl.FitHeight(panzoomRef.current,divRef.current,boxRef.current)}}
                 variant="contained">Fit Height</Button>
-        <Button onClick={()=>{utl.FitWidth(panzoomRef.current,elementDiv.current,boxRef.current)}}
+        <Button onClick={()=>{utl.FitWidth(panzoomRef.current,divRef.current,boxRef.current)}}
                 variant="contained">Fit Width</Button>
         <Button onClick={()=>{utl.softReset(panzoomRef.current)}}
                 variant="contained">Reset</Button>
-        <Button onClick={(e)=>{utl.Center(panzoomRef.current,elementDiv.current,boxRef.current)}}
+        <Button onClick={(e)=>{utl.Center(panzoomRef.current,divRef.current,boxRef.current)}}
                 variant="contained">Center</Button>
         <Button onClick={TestSVGjs} variant="contained">Test SVG.js</Button>
         <Button onClick={()=>{setOpen(true)}} variant="contained">Open modal</Button>
     </Stack>
     <Box id="mainContent" m={1} >
         <Paper elevation={3}>
-            <Box ref={boxRef} sx={{ height:height, overflow: 'hidden' }}>
-                <div ref={elementDiv} >
+            <Box ref={boxRef} sx={{ height:boxHeight, overflow: 'hidden' }}>
+                <div ref={divRef} >
                   <SVG src={src} onLoad={()=>{setLoaded(true)}} />
                 </div>
             </Box>
         </Paper>
     </Box>
-    <PanZoomModal src={src} open={open} handleClose={handleClose}/>
+    <PanZoomModal src={src} open={open} handleClose={()=>{setOpen(false)}}/>
     </Stack>
   )
 }
