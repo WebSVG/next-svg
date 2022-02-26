@@ -1,18 +1,33 @@
 # next-svg
-testing svg viewing as a react component on next js
+svg pan zoom as a react component on next js with adjustment buttons and Modal
 
 # Spec
-* svg loaded dynamically with javascript
+* svg loaded dynamically from json input filenames
 * panzoom object is disabled by default to allow window wheel vertical scroll
 * panzoom activated only after first mouse down on image or adjutment buttons
 * activation is show with Box higher shadow and border solid style
+* cursor `grab` is shown when panzoom is active
+* fit button allow to adjust the image in the viewing area, fitting width or height depending on the ratio
 * first mouse down can be continued to pan the image
 * stop button can deactivate the panzoom to gain vertical scroll ability again
-* open modal button open a fitted image with active panzoom
+* a new reactivation after stop will reset the position
+* open Modal button open a full window Modal fitted image with active panzoom
+* Modal is not 100% on width and height but a small percentage of darkened are is left to click on and exit from the modal
+* Keyboard escape key also allows to close the modal
 
 ## decisions
+* it is accepted to rely on javascript dynamic loading of svg instead of the `embed` or `object` due to the limitation of panzoom lib of not acting on shadow svg documents
+* it is accepted that images are not adjusted by default and css styling and svg properties are used to define the default adjustment e.g. without `width=900px`
 * mouse leave cannot be used to deactivate the panzoom due to the activation limitation orresetting the image position
 
+## TODOs
+* handle images not SVGs only
+
+## Limitations
+* touch generates Chrome : "Intervention unable to preventdefault inside passive event"
+* cursor `grab` does not show on first mouse down and drag, only after release
+* timeout of 1 ms needed for second Modal open otherwise svg is undefined
+# Code description
 ## working sample
 * `inline.js` : using `panzoom` and `react-inlinesvg`.
 * `panzoom` : https://github.com/anvaka/panzoom
@@ -40,16 +55,8 @@ testing svg viewing as a react component on next js
     * Browser only integration needs to return with a `Script` tag referencing a manually copied .js
     * svg does not pan all over the parent but in the firstly defined creation window
 
-# SVG files
+## SVG files
 * files with top svg element containing width and height attributes will have fixed default width and height
 * svg files without and with viwBox only will have responsive width
 * `svg.getBoundingClientRect();` does not react immediatly so that right after calls to `zoomAbs()` or `moveTo()` the returned value is the old one before the calls. One way to solve this is to avoid using it and precompute what the returned value is supposed to be depdning on if the top svg has a fixed width or fits to parent width
 
-# TODOs
-* lazy activation
-* fit Modal
-* handle images not SVGs only
-* icon pan
-
-# Issues
-* touch generates Chrome : "Intervention unable to preventdefault inside passive event"

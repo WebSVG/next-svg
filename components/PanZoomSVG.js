@@ -27,7 +27,7 @@ export default function PanZoom({src}) {
   }
   function onComponentUnmount(){
     stopPZ()
-    console.log("removing listeners")
+    //console.log("removing listener")//TODO not clear why this runs on startup before Mount ?
     if(divRef.current){
       boxRef.current.removeEventListener("mousedown",onMouseDown)
     }
@@ -51,7 +51,7 @@ export default function PanZoom({src}) {
   
   useEffect(() => {
     if(loaded && divRef.current){
-      console.log("adding listener")
+      //console.log("adding listener")
       boxRef.current.addEventListener("mousedown", onMouseDown,true)
     }
     return onComponentUnmount
@@ -84,7 +84,7 @@ export default function PanZoom({src}) {
         <Button onClick={TestSVGjs} variant="contained">Test SVG.js</Button>
         <Button onClick={()=>{setOpen(true)}} variant="contained">Open modal</Button>
     </Stack>
-    <Box id="mainContent" m={1} sx={{border: active?'1px solid':'0px' }}>
+    <Box id="mainContent" m={1} sx={{border: active?'1px solid':'0px', cursor:active?'grab':'default' }}>
         <Paper elevation={active?5:2}>
             <Box ref={boxRef} 
                  sx={{  height:boxHeight, overflow: 'hidden'}}>

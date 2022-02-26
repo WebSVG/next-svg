@@ -1,11 +1,8 @@
-import Head from 'next/head'
-import React, { useRef, useState, useEffect, useCallback } from 'react';
+import React, { useRef, useState, useCallback } from 'react';
 import panzoom from 'panzoom';
-import {    Paper, Modal,Box, Divider,
-  Typography, Slider,  Stack, Item, Button } from '@mui/material';
+import { Modal,Box } from '@mui/material';
+import * as utl from './svg_utils'
 
-
-import { SVG as SVGjs } from '@svgdotjs/svg.js'
 import SVG from 'react-inlinesvg';
 
 const style = {
@@ -19,31 +16,49 @@ const style = {
   border: '2px solid #000',
   boxShadow: 24,
   p: 4,
-  overflow: 'hidden'
+  overflow: 'hidden',
+  cursor: 'grab'
 };
 
 export default function PanZoom({src,open,handleClose}) {
   const started = useRef(false)
   const [loaded, setLoaded] = useState(false)
   
-  const minZoom = 0.1
-  const panzoomRef = useRef(null);
-  const elementDiv = useCallback(node=>{
-    //console.log(`Modal: loaded = ${loaded} ; started.current = ${started.current} ; node = ${node}`)
-    if(node != null){
-      if(loaded){
-        if(!started.current){startSVG(node)}
-      }
-    }},[loaded,open]);
+  const zoomOptions = {minZoom: 0.1, maxZoom:4}
+  const panzoomRef = useRef(null)
+  const boxRef = useRef(null);
+  const divRef = useRef(null)
 
-  function startSVG(node){
-    panzoomRef.current = panzoom(node, { minZoom,maxZoom: 4});
-    started.current=true
-    console.log("Modal pan zoom : created")
-      return () => { stopSVG() }
+  const divMeasure = useCallback(node=>{
+    divRef.current = node
+    startPZ()
+    },[loaded,open]);
+
+  const boxMeasure = useCallback(node=>{
+    boxRef.current = node
+    startPZ()
+    },[loaded,open]);
+  
+  function startPZ(){
+    if((divRef.current != null) && (boxRef.current != null) && (loaded) && (!started.current)){
+      panzoomRef.current = panzoom(divRef.current, zoomOptions);
+      started.current=true
+      let svg = divRef.current.getElementsByTagName('svg')[0]
+      if(svg){
+        utl.Fit(panzoomRef.current,divRef.current,boxRef.current)
+        console.log("Modal pan zoom : created")
+      }else{
+        //TODO not clear why this timeout is needed, the svg is underfined otherwise
+        setTimeout(()=>{
+          utl.Fit(panzoomRef.current,divRef.current,boxRef.current)
+          console.log("Modal pan zoom : created fitted after delay")
+        },1)
+      }
+    }
+    return
   }
-  function stopSVG(){
-    //console.log(`Modal: stopSVG panzoomRef.current=${panzoomRef.current}`)
+  function stopPZ(){
+    //console.log(`Modal: stopPZ panzoomRef.current=${panzoomRef.current}`)
     if(panzoomRef.current){
       panzoomRef.current.dispose();
       started.current=false
@@ -54,12 +69,12 @@ export default function PanZoom({src,open,handleClose}) {
   return (
       <Modal
       open={open}
-      onClose={()=>{stopSVG();handleClose();}}
+      onClose={()=>{stopPZ();handleClose();}}
       aria-labelledby="modal-modal-title"
       aria-describedby="modal-modal-description"
     >
-      <Box sx={style} >
-        <div ref={elementDiv} id="tiger">
+      <Box ref={boxMeasure} sx={style} >
+        <div ref={divMeasure}>
           <SVG src={src} onLoad={()=>{setLoaded(true)}}/>
         </div>
       </Box>
