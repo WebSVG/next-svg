@@ -15,7 +15,6 @@ export default function PanZoom({src}) {
   const [loaded, setLoaded] = useState(false)
   
   const [open, setOpen] = useState(false);
-  const handleOpen = () => setOpen(true);
   const handleClose = () => setOpen(false);
 
   const height = 400
@@ -42,11 +41,6 @@ export default function PanZoom({src}) {
       console.log(`Modal: disposed`)
     }
   }
-  function get_svg_size(){
-    let svg = elementDiv.current.getElementsByTagName('svg')[0]
-    let bbox = svg.getBBox();
-    return {svg_width:bbox.width,svg_height:bbox.height}
-  }
   
   useEffect(() => {
     if(loaded){
@@ -56,86 +50,6 @@ export default function PanZoom({src}) {
       }
     }
   }, [loaded]);
-  function Reset(){
-    if(! panzoomRef.current) return
-    panzoomRef.current.dispose();
-    panzoomRef.current = panzoom(elementDiv.current, zoomOptions);
-    console.log("reset")
-  
-  }
-    function Center(e){
-    if(! panzoomRef.current) return
-    panzoomRef.current = utl.Reset(panzoomRef.current,elementDiv.current, zoomOptions)
-    //Reset()
-    let svg = elementDiv.current.getElementsByTagName('svg')[0]
-    //let cbox = svg.getBoundingClientRect();
-    let {svg_width, svg_height} = get_svg_size()
-    let scale = boxRef.current.clientWidth / svg_width
-    if(svg.hasAttributeNS(null,"width")){
-      let client_width = svg.getAttributeNS(null,"width")
-      if(client_width.endsWith("px")){
-        client_width = Number(client_width.slice(0,-2))
-      }
-      scale = client_width / svg_width
-    }
-    let offsetY         = boxRef.current.clientHeight/2 - (svg_height*scale)/2
-    let offsetX         = boxRef.current.clientWidth/2 - (svg_width*scale)/2
-    panzoomRef.current.moveTo(offsetX, offsetY);
-    console.log(`moveto (${offsetX},${offsetY})`)
-  }
-  function FitHeight(e){
-    if(! panzoomRef.current) return
-    Reset()
-    let svg = elementDiv.current.getElementsByTagName('svg')[0]
-    //let cbox = svg.getBoundingClientRect();
-    let {svg_width, svg_height} = get_svg_size()
-    let scale = boxRef.current.clientWidth / svg_width
-    if(svg.hasAttributeNS(null,"width")){
-      let client_width = svg.getAttributeNS(null,"width")
-      if(client_width.endsWith("px")){
-        client_width = Number(client_width.slice(0,-2))
-      }
-      scale = client_width / svg_width
-    }
-    //console.log(`scale = ${scale}`)
-    let offsetY         = boxRef.current.clientHeight/2 - (svg_height*scale)/2
-    let offsetX         = boxRef.current.clientWidth/2 - (svg_width*scale)/2
-    panzoomRef.current.moveTo(offsetX, offsetY);
-    //console.log(`moveTo (${offsetX},${offsetY})`)
-
-    let cbox = svg.getBoundingClientRect();
-    let zoomX           = boxRef.current.clientWidth/2
-    let zoomY           = boxRef.current.clientHeight/2
-    let fit_height_zoom  = boxRef.current.clientHeight/(svg_height*scale)
-    panzoomRef.current.zoomAbs(zoomX, zoomY, fit_height_zoom);
-    //console.log(`zoomAbs (${zoomX},${zoomY},${fit_height_zoom})`)
-  }
-  function FitWidth(e){
-    if(! panzoomRef.current) return
-    Reset()
-    let svg = elementDiv.current.getElementsByTagName('svg')[0]
-    //let cbox = svg.getBoundingClientRect();
-    let {svg_width, svg_height} = get_svg_size()
-    let scale = boxRef.current.clientWidth / svg_width
-    if(svg.hasAttributeNS(null,"width")){
-      let client_width = svg.getAttributeNS(null,"width")
-      if(client_width.endsWith("px")){
-        client_width = Number(client_width.slice(0,-2))
-      }
-      scale = client_width / svg_width
-    }
-    //console.log(`scale = ${scale}`)
-    let offsetY         = boxRef.current.clientHeight/2 - (svg_height*scale)/2
-    let offsetX         = boxRef.current.clientWidth/2 - (svg_width*scale)/2
-    panzoomRef.current.moveTo(offsetX, offsetY);
-    //console.log(`moveTo (${offsetX},${offsetY})`)
-
-    let cbox = svg.getBoundingClientRect();
-    let fit_width_zoom  = boxRef.current.clientWidth/(svg_width*scale)
-    let zoomX           = boxRef.current.clientWidth/2
-    let zoomY           = boxRef.current.clientHeight/2
-    panzoomRef.current.zoomAbs(zoomX, zoomY, fit_width_zoom);
-  }
   function TestSVGjs(e){
     let svg = elementDiv.current.getElementsByTagName('svg')[0]
     if(svg){
@@ -155,14 +69,16 @@ export default function PanZoom({src}) {
         spacing={2}
         justifyContent="center"
     >
-        <Button onClick={FitHeight} variant="contained">Fit Height</Button>
-        <Button onClick={FitWidth} variant="contained">Fit Width</Button>
-        <Button onClick={()=>{utl.Reset(panzoomRef.current,elementDiv.current, zoomOptions)}}
+        <Button onClick={()=>{utl.FitHeight(panzoomRef.current,elementDiv.current,boxRef.current)}}
+                variant="contained">Fit Height</Button>
+        <Button onClick={()=>{utl.FitWidth(panzoomRef.current,elementDiv.current,boxRef.current)}}
+                variant="contained">Fit Width</Button>
+        <Button onClick={()=>{utl.softReset(panzoomRef.current)}}
                 variant="contained">Reset</Button>
-        <Button onClick={(e)=>{panzoomRef.current = utl.Center(panzoomRef.current,elementDiv.current,boxRef.current,zoomOptions)}}
+        <Button onClick={(e)=>{utl.Center(panzoomRef.current,elementDiv.current,boxRef.current)}}
                 variant="contained">Center</Button>
         <Button onClick={TestSVGjs} variant="contained">Test SVG.js</Button>
-        <Button onClick={handleOpen} variant="contained">Open modal</Button>
+        <Button onClick={()=>{setOpen(true)}} variant="contained">Open modal</Button>
     </Stack>
     <Box id="mainContent" m={1} >
         <Paper elevation={3}>

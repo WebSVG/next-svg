@@ -19,7 +19,7 @@ function Reset(pzRef,divRef,zoomOptions){
   return panzoom(divRef, zoomOptions);
 }
 
-function Center(pzRef,divRef,boxRef,zoomOptions){
+function Center(pzRef,divRef,boxRef){
   if(! pzRef) return null
   //pzRef = Reset(pzRef,divRef,zoomOptions)
   softReset(pzRef)
@@ -38,10 +38,67 @@ function Center(pzRef,divRef,boxRef,zoomOptions){
   let offsetX         = boxRef.clientWidth/2 - (svg_width*scale)/2
   pzRef.moveTo(offsetX, offsetY);
   console.log(`moveto (${offsetX},${offsetY})`)
-  return pzRef
+  return
+}
+
+function FitHeight(pzRef,divRef,boxRef){
+  if(! pzRef) return
+  softReset(pzRef)
+  let svg = divRef.getElementsByTagName('svg')[0]
+  //let cbox = svg.getBoundingClientRect();
+  let {svg_width, svg_height} = get_svg_size(divRef)
+  let scale = boxRef.clientWidth / svg_width
+  if(svg.hasAttributeNS(null,"width")){
+    let client_width = svg.getAttributeNS(null,"width")
+    if(client_width.endsWith("px")){
+      client_width = Number(client_width.slice(0,-2))
+    }
+    scale = client_width / svg_width
+  }
+  //console.log(`scale = ${scale}`)
+  let offsetY         = boxRef.clientHeight/2 - (svg_height*scale)/2
+  let offsetX         = boxRef.clientWidth/2 - (svg_width*scale)/2
+  pzRef.moveTo(offsetX, offsetY);
+  //console.log(`moveTo (${offsetX},${offsetY})`)
+
+  let cbox = svg.getBoundingClientRect();
+  let zoomX           = boxRef.clientWidth/2
+  let zoomY           = boxRef.clientHeight/2
+  let fit_height_zoom  = boxRef.clientHeight/(svg_height*scale)
+  pzRef.zoomAbs(zoomX, zoomY, fit_height_zoom);
+  //console.log(`zoomAbs (${zoomX},${zoomY},${fit_height_zoom})`)
+}
+function FitWidth(pzRef,divRef,boxRef){
+  if(! pzRef) return
+  softReset(pzRef)
+  let svg = divRef.getElementsByTagName('svg')[0]
+  //let cbox = svg.getBoundingClientRect();
+  let {svg_width, svg_height} = get_svg_size(divRef)
+  let scale = boxRef.clientWidth / svg_width
+  if(svg.hasAttributeNS(null,"width")){
+    let client_width = svg.getAttributeNS(null,"width")
+    if(client_width.endsWith("px")){
+      client_width = Number(client_width.slice(0,-2))
+    }
+    scale = client_width / svg_width
+  }
+  //console.log(`scale = ${scale}`)
+  let offsetY         = boxRef.clientHeight/2 - (svg_height*scale)/2
+  let offsetX         = boxRef.clientWidth/2 - (svg_width*scale)/2
+  pzRef.moveTo(offsetX, offsetY);
+  //console.log(`moveTo (${offsetX},${offsetY})`)
+
+  let cbox = svg.getBoundingClientRect();
+  let fit_width_zoom  = boxRef.clientWidth/(svg_width*scale)
+  let zoomX           = boxRef.clientWidth/2
+  let zoomY           = boxRef.clientHeight/2
+  pzRef.zoomAbs(zoomX, zoomY, fit_width_zoom);
 }
 
 export{
+  softReset,
   Reset,
-  Center
+  Center,
+  FitHeight,
+  FitWidth
 }
