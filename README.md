@@ -1,6 +1,18 @@
 # next-svg
 testing svg viewing as a react component on next js
 
+# Spec
+* svg loaded dynamically with javascript
+* panzoom object is disabled by default to allow window wheel vertical scroll
+* panzoom activated only after first mouse down on image or adjutment buttons
+* activation is show with Box higher shadow and border solid style
+* first mouse down can be continued to pan the image
+* stop button can deactivate the panzoom to gain vertical scroll ability again
+* open modal button open a fitted image with active panzoom
+
+## decisions
+* mouse leave cannot be used to deactivate the panzoom due to the activation limitation orresetting the image position
+
 ## working sample
 * `inline.js` : using `panzoom` and `react-inlinesvg`.
 * `panzoom` : https://github.com/anvaka/panzoom
