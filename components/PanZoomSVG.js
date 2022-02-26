@@ -19,28 +19,23 @@ export default function PanZoom({src}) {
   const handleClose = () => setOpen(false);
 
   const height = 400
-  const minZoom = 0.1
+  const zoomOptions = {minZoom: 0.1, maxZoom:4}
   const boxRef = useRef(null);
-  const elementRef = useRef(null);
+  const elementDiv = useRef(null);
   const panzoomRef = useRef(null);
 
 
-  function startSVG(){
-    if(!elementRef.current){
+  function startPZ(){
+    if(!elementDiv.current){
       return
     }
-    let svg = elementRef.current.getElementsByTagName('svg')[0]
-    if(svg){
-      panzoomRef.current = panzoom(elementRef.current, { minZoom,maxZoom: 4});
-      started.current = true
-      console.log("created Modal pan zoom")
-    }else{
-      console.warn("not svg, fetching width height not supported yet, set fixed to 800,600")
-    }
-      return () => { stopSVG() }
+    panzoomRef.current = panzoom(elementDiv.current, zoomOptions);
+    started.current = true
+    console.log("created Modal pan zoom")
+    return () => { stopPZ() }
   }
-  function stopSVG(){
-    console.log(`Modal: stopSVG panzoomRef.current=${panzoomRef.current}`)
+  function stopPZ(){
+    console.log(`Modal: stopPZ panzoomRef.current=${panzoomRef.current}`)
     if(panzoomRef.current){
       panzoomRef.current.dispose();
       started.current = false
@@ -48,7 +43,7 @@ export default function PanZoom({src}) {
     }
   }
   function get_svg_size(){
-    let svg = elementRef.current.getElementsByTagName('svg')[0]
+    let svg = elementDiv.current.getElementsByTagName('svg')[0]
     let bbox = svg.getBBox();
     return {svg_width:bbox.width,svg_height:bbox.height}
   }
@@ -56,28 +51,23 @@ export default function PanZoom({src}) {
   useEffect(() => {
     if(loaded){
       if(!started.current){
-        startSVG(elementRef.current,panzoomRef.current,minZoom)
+        startPZ()
         started.current = true
       }
     }
   }, [loaded]);
-  function Reset(e){
-    console.log(panzoomRef.current)
+  function Reset(){
     if(! panzoomRef.current) return
     panzoomRef.current.dispose();
-    panzoomRef.current = panzoom(elementRef.current, { minZoom: minZoom,maxZoom: 4});
+    panzoomRef.current = panzoom(elementDiv.current, zoomOptions);
     console.log("reset")
-
+  
   }
-  function softReset(e){
+    function Center(e){
     if(! panzoomRef.current) return
-    panzoomRef.current.zoomAbs(0, 0, 1);
-    panzoomRef.current.moveTo(0, 0);
-  }
-  function Center(e){
-    if(! panzoomRef.current) return
-    Reset()
-    let svg = elementRef.current.getElementsByTagName('svg')[0]
+    panzoomRef.current = utl.Reset(panzoomRef.current,elementDiv.current, zoomOptions)
+    //Reset()
+    let svg = elementDiv.current.getElementsByTagName('svg')[0]
     //let cbox = svg.getBoundingClientRect();
     let {svg_width, svg_height} = get_svg_size()
     let scale = boxRef.current.clientWidth / svg_width
@@ -96,7 +86,7 @@ export default function PanZoom({src}) {
   function FitHeight(e){
     if(! panzoomRef.current) return
     Reset()
-    let svg = elementRef.current.getElementsByTagName('svg')[0]
+    let svg = elementDiv.current.getElementsByTagName('svg')[0]
     //let cbox = svg.getBoundingClientRect();
     let {svg_width, svg_height} = get_svg_size()
     let scale = boxRef.current.clientWidth / svg_width
@@ -123,7 +113,7 @@ export default function PanZoom({src}) {
   function FitWidth(e){
     if(! panzoomRef.current) return
     Reset()
-    let svg = elementRef.current.getElementsByTagName('svg')[0]
+    let svg = elementDiv.current.getElementsByTagName('svg')[0]
     //let cbox = svg.getBoundingClientRect();
     let {svg_width, svg_height} = get_svg_size()
     let scale = boxRef.current.clientWidth / svg_width
@@ -147,7 +137,7 @@ export default function PanZoom({src}) {
     panzoomRef.current.zoomAbs(zoomX, zoomY, fit_width_zoom);
   }
   function TestSVGjs(e){
-    let svg = elementRef.current.getElementsByTagName('svg')[0]
+    let svg = elementDiv.current.getElementsByTagName('svg')[0]
     if(svg){
       let draw = SVGjs(svg)
       draw.rect(100, 100).fill('#f06')
@@ -167,15 +157,17 @@ export default function PanZoom({src}) {
     >
         <Button onClick={FitHeight} variant="contained">Fit Height</Button>
         <Button onClick={FitWidth} variant="contained">Fit Width</Button>
-        <Button onClick={Reset} variant="contained">Reset</Button>
-        <Button onClick={Center} variant="contained">Center</Button>
+        <Button onClick={()=>{utl.Reset(panzoomRef.current,elementDiv.current, zoomOptions)}}
+                variant="contained">Reset</Button>
+        <Button onClick={(e)=>{panzoomRef.current = utl.Center(panzoomRef.current,elementDiv.current,boxRef.current,zoomOptions)}}
+                variant="contained">Center</Button>
         <Button onClick={TestSVGjs} variant="contained">Test SVG.js</Button>
         <Button onClick={handleOpen} variant="contained">Open modal</Button>
     </Stack>
     <Box id="mainContent" m={1} >
         <Paper elevation={3}>
             <Box ref={boxRef} sx={{ height:height, overflow: 'hidden' }}>
-                <div ref={elementRef} >
+                <div ref={elementDiv} >
                   <SVG src={src} onLoad={()=>{setLoaded(true)}} />
                 </div>
             </Box>

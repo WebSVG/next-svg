@@ -33,3 +33,11 @@ testing svg viewing as a react component on next js
 * svg files without and with viwBox only will have responsive width
 * `svg.getBoundingClientRect();` does not react immediatly so that right after calls to `zoomAbs()` or `moveTo()` the returned value is the old one before the calls. One way to solve this is to avoid using it and precompute what the returned value is supposed to be depdning on if the top svg has a fixed width or fits to parent width
 
+# TODOs
+* lazy activation
+* fit Modal
+* handle images not SVGs only
+* icon pan
+
+# Issues
+* touch generates Chrome : "Intervention unable to preventdefault inside passive event"
