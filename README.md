@@ -1,6 +1,9 @@
 # next-svg
 svg pan zoom as a react component on next js with adjustment buttons and Modal
+## Deployed on Vercel
+app : https://next-svg-vercel.vercel.app/
 
+deployment repo : https://github.com/wassfila/next-svg-vercel
 # Spec
 * svg loaded dynamically from json input filenames
 * panzoom object is disabled by default to allow window wheel vertical scroll
