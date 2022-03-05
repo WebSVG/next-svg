@@ -10,6 +10,7 @@ import EditIcon from '@mui/icons-material/Edit';
 import CloseIcon from '@mui/icons-material/Close';
 import FitScreenIcon from '@mui/icons-material/FitScreen';
 import ArrowUpwardIcon from '@mui/icons-material/ArrowUpward';
+import WidthIcon from '../public/width.svg'
 
 export default function PanZoom({src}) {
   const started = useRef(false)
@@ -89,7 +90,7 @@ export default function PanZoom({src}) {
         <Button onClick={()=>{onMouseDown();utl.Fit(panzoomRef.current,divRef.current,boxRef.current)}}
                 variant="text"><FitScreenIcon/> fit</Button>
         <Button onClick={()=>{onMouseDown();utl.Top(panzoomRef.current,divRef.current,boxRef.current)}}
-                variant="text"><ArrowUpwardIcon/></Button>
+                variant="text"><WidthIcon/></Button>
         <Button onClick={TestSVGjs} variant="text"><EditIcon/></Button>
         <Button onClick={()=>{setOpen(true)}} variant="text" id={`pz-fs-${src}`}><FullscreenIcon/></Button>
     </Stack>
