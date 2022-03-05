@@ -79,7 +79,7 @@ export default function PanZoom({src}) {
     }
   }
   return (
-    <Stack ref={stackRef} mt={1}>
+    <Stack id={`pz-${src}`} ref={stackRef} mt={1}>
     <Stack
         direction="row"
         divider={<Divider orientation="vertical" flexItem />}
@@ -91,7 +91,7 @@ export default function PanZoom({src}) {
         <Button onClick={()=>{onMouseDown();utl.Top(panzoomRef.current,divRef.current,boxRef.current)}}
                 variant="text"><ArrowUpwardIcon/></Button>
         <Button onClick={TestSVGjs} variant="text"><EditIcon/></Button>
-        <Button onClick={()=>{setOpen(true)}} variant="text"><FullscreenIcon/></Button>
+        <Button onClick={()=>{setOpen(true)}} variant="text" id={`pz-fs-${src}`}><FullscreenIcon/></Button>
     </Stack>
     <Box id="mainContent" m={1} sx={{border: focus?'2px solid':'0px',cursor:'grab'}}>
       <Paper elevation={focus?10:2}>

@@ -70,8 +70,9 @@ deployment repo : https://github.com/wassfila/next-svg-vercel
 * svg files without and with viwBox only will have responsive width
 * `svg.getBoundingClientRect();` does not react immediatly so that right after calls to `zoomAbs()` or `moveTo()` the returned value is the old one before the calls. One way to solve this is to avoid using it and precompute what the returned value is supposed to be depdning on if the top svg has a fixed width or fits to parent width
 
-# Credits
+# Credits and Links
 * https://commons.wikimedia.org/wiki/File:Linux_kernel_map.svg
 * https://commons.wikimedia.org/wiki/File:Ghostscript_Tiger.svg
 * https://openclipart.org/detail/332727/vintage-flourish-divider-7
 * https://www.homesmartmesh.com/docs/microcontrollers/nrf52/thread_sensortag/#zephyr-tag-firmware
+* https://developer.mozilla.org/en-US/docs/Learn/HTML/Multimedia_and_embedding/Responsive_images
