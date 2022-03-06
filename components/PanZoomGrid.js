@@ -5,8 +5,7 @@ import InfoIcon from '@mui/icons-material/Info';
 import KeyboardArrowDownIcon from '@mui/icons-material/KeyboardArrowDown';
 import LinkIcon from '@mui/icons-material/Link';
 
-export default function PanZoomGrid({list,thumbnails=false}) {
-  const thumb_width = 240
+export default function PanZoomGrid({list,thumbnails=false,thumb_width=200}) {
   let thumb_list = []
   if(thumbnails){
     thumb_list = list.map((item)=>({
@@ -21,7 +20,7 @@ export default function PanZoomGrid({list,thumbnails=false}) {
         <Box mt={1} sx={{backgroundColor:"#e1eaf2"}} p={1}>
         <Grid container spacing={{ xs: 2, md: 3 }} alignItems="center" justifyContent="space-evenly">
           {thumb_list.map((item,index) => (
-            <Grid item key={index} xs={2} sx={{minWidth:300}}>
+            <Grid item key={index} xs={2} sx={{minWidth:thumb_width+32}}>
               <Box >
                 <Paper >
                   <Stack
@@ -44,7 +43,7 @@ export default function PanZoomGrid({list,thumbnails=false}) {
                       alignItems="center"
                       justifyContent="space-between"
                     >
-                      <Typography variant="h6" component="div" ml={2} sx={{ flexGrow: 1 }}>
+                      <Typography component="div" ml={2} sx={{ flexGrow: 1 }}>
                                         {item.name}
                       </Typography>
                       <IconButton

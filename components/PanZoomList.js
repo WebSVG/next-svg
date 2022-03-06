@@ -40,10 +40,12 @@ export default function PanZoomList({list,thumbnails=false,thumb_width=200}) {
 
   const boxRef = useCallback(node=>{
     if(node != null){
-      let nb_cols = Math.ceil(node.clientWidth / thumb_width)
-      if(nb_cols>1){nb_cols-=1}
+      let col_width = thumb_width + 16      //+ImageList.gap + Box.padding
+      let cwidth = node.clientWidth - 2 * 8 // minus padding
+      let nb_cols = Math.floor(cwidth / col_width)
+      //if(nb_cols>1){nb_cols-=1}
       //if(nb_cols>5){nb_cols=5}
-      console.log(`nb cols = ${nb_cols}`)
+      console.log(`clientw:${node.clientWidth} ; nb cols = ${nb_cols}`)
       setNbCols(nb_cols)
     }
     },[size]);
@@ -60,28 +62,31 @@ export default function PanZoomList({list,thumbnails=false,thumb_width=200}) {
   return (
     <>
       {thumbnails &&
-        <Box ref={boxRef} sx={{backgroundColor:"#e1eaf2"}} p={1}>
-        <ImageList variant="masonry" cols={nbcols} gap={8} sx={{ minWidth:600 }}>
+        <Box ref={boxRef} sx={{backgroundColor:"#e1eaf2",minWidth:(thumb_width+16)*2+16 }} p={1}>
+        <ImageList variant="masonry" cols={nbcols} gap={4} sx={{ minWidth:(thumb_width+16)*2 }}>
             {thumb_list.map((item,index) => (
-            <Box key={index} mb={1}>
+                <ImageListItem key={index} >
+            <Box mb={1} >
               <Paper >
-                <ImageListItem sx={{width:thumb_width*0.95}}>
-                <img 
-                  src={item.thumb}
-                  alt={item.href}
-                  onClick={()=>{document.getElementById(`pz-fs-${item.name}.svg`).click()}}
-                  style={{cursor:"zoom-in"}}
-                />
-                <ImageListItemBar 
-                  position="below"
-                />
+              <Stack
+                    direction="column"
+                    alignItems="center"
+                  >
+                    <Box p={1}>
+                      <img width={thumb_width}
+                        src={item.thumb}
+                        alt={item.href}
+                        onClick={()=>{document.getElementById(`pz-fs-${item.name}.svg`).click()}}
+                        style={{cursor:"zoom-in"}}
+                      />
+                    </Box>
+                  </Stack>
                   <Stack
                       direction="row"
-                      spacing={2}
                       alignItems="center"
                       justifyContent="space-between"
                     >
-                      <Typography component="div" ml={2} sx={{ flexGrow: 1 }}>
+                      <Typography component="div" ml={2} sx={{ flexGrow: 1, maxWidth:120 }}>
                                         {item.name}
                       </Typography>
                       <IconButton
@@ -89,12 +94,12 @@ export default function PanZoomList({list,thumbnails=false,thumb_width=200}) {
                         aria-label={`star ${item.title}`}
                         href={`#${item.href}`}
                       >
-                        <ArrowDownwardIcon/>
+                        <LinkIcon/>
                       </IconButton>
                   </Stack>  
-                </ImageListItem>
-              </Paper>
+                  </Paper>
             </Box>
+                </ImageListItem>
           ))}
         </ImageList>
       </Box>
