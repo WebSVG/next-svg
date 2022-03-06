@@ -4,6 +4,8 @@ import {Box, Paper, ImageList,ImageListItem,ImageListItemBar,
   IconButton,Stack,Typography,Button,ListSubheader  } from '@mui/material';
 import InfoIcon from '@mui/icons-material/Info';
 import KeyboardArrowDownIcon from '@mui/icons-material/KeyboardArrowDown';
+import LinkIcon from '@mui/icons-material/Link';
+import ArrowDownwardIcon from '@mui/icons-material/ArrowDownward';
 
 //https://usehooks.com/useWindowSize/
 function useWindowSize() {
@@ -28,20 +30,19 @@ function useWindowSize() {
 function srcset(image, size, rows = 1, cols = 1) {
   return {
     src: `${image}?w=${size * cols}&h=${size * rows}&fit=crop&auto=format`,
-    srcSet: `${image}?w=${size * cols}&h=${
-      size * rows
-    }&fit=crop&auto=format&dpr=2 2x`,
+    srcSet: `${image}?w=${size * cols}&h=${size * rows}&fit=crop&auto=format&dpr=2 2x`,
   };
 }
 
-export default function PanZoomList({list,thumbnails=false}) {
-  const thumb_width = 300
+export default function PanZoomList({list,thumbnails=false,thumb_width=200}) {
   const [nbcols,setNbCols] = useState(3)
   const size = useWindowSize();
 
   const boxRef = useCallback(node=>{
     if(node != null){
       let nb_cols = Math.ceil(node.clientWidth / thumb_width)
+      if(nb_cols>1){nb_cols-=1}
+      //if(nb_cols>5){nb_cols=5}
       console.log(`nb cols = ${nb_cols}`)
       setNbCols(nb_cols)
     }
@@ -59,16 +60,15 @@ export default function PanZoomList({list,thumbnails=false}) {
   return (
     <>
       {thumbnails &&
-        <Box ref={boxRef}>
+        <Box ref={boxRef} sx={{backgroundColor:"#e1eaf2"}} p={1}>
         <ImageList variant="masonry" cols={nbcols} gap={8} sx={{ minWidth:600 }}>
             {thumb_list.map((item,index) => (
-            <Box key={index} m={1}>
+            <Box key={index} mb={1}>
               <Paper >
-                <ImageListItem >
-                <img width={thumb_width}
-                  {...srcset(item.thumb, 300, 1, 1)}
+                <ImageListItem sx={{width:thumb_width*0.95}}>
+                <img 
+                  src={item.thumb}
                   alt={item.href}
-                  loading="lazy"
                   onClick={()=>{document.getElementById(`pz-fs-${item.name}.svg`).click()}}
                   style={{cursor:"zoom-in"}}
                 />
@@ -81,7 +81,7 @@ export default function PanZoomList({list,thumbnails=false}) {
                       alignItems="center"
                       justifyContent="space-between"
                     >
-                      <Typography variant="h6" component="div" ml={2} sx={{ flexGrow: 1 }}>
+                      <Typography component="div" ml={2} sx={{ flexGrow: 1 }}>
                                         {item.name}
                       </Typography>
                       <IconButton
@@ -89,7 +89,7 @@ export default function PanZoomList({list,thumbnails=false}) {
                         aria-label={`star ${item.title}`}
                         href={`#${item.href}`}
                       >
-                        <KeyboardArrowDownIcon />
+                        <ArrowDownwardIcon/>
                       </IconButton>
                   </Stack>  
                 </ImageListItem>
