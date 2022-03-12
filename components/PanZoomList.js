@@ -1,10 +1,11 @@
 import { useCallback, useState, useEffect} from 'react';
-import PanZoomSVG from '../components/PanZoomSVG'
+import PanZoomSlide from '../components/PanZoomSlide'
 import PanZoomThumb from '../components/PanZoomThumb'
-import {Box, ImageList,ImageListItem,ImageListItemBar,
-  IconButton,Stack,Typography,Button,ListSubheader,
-  Accordion,AccordionSummary,AccordionDetails  } from '@mui/material';
+import {Box, ImageList,ImageListItem,Grid,
+  Typography,Accordion,AccordionSummary,AccordionDetails  } from '@mui/material';
 import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
+import BurstModeIcon from '@mui/icons-material/BurstMode';
+import ImageIcon from '@mui/icons-material/Image';
 
 //https://usehooks.com/useWindowSize/
 function useWindowSize() {
@@ -26,7 +27,7 @@ function useWindowSize() {
   return windowSize;
 }
 
-export default function PanZoomList({list,thumbnails=false,thumb_width=200,slides=false,default_expanded=true}) {
+export default function PanZoomList({list,thumbnails=false,thumb_width=200,slides=false,default_expanded=false}) {
   const [expanded,setExpanded] = useState(default_expanded)
   const [nbcols,setNbCols] = useState(3)
   const size = useWindowSize();
@@ -54,7 +55,7 @@ export default function PanZoomList({list,thumbnails=false,thumb_width=200,slide
     }))
   }
   return (
-    <>
+    <Box mb={2}>
       {thumbnails &&
         <Accordion 
           sx={{backgroundColor:"#bac9d6"}} 
@@ -65,7 +66,8 @@ export default function PanZoomList({list,thumbnails=false,thumb_width=200,slide
           aria-controls="panel1a-content"
           id="panel1a-header"
         >
-          <Typography>{expanded?"Gallery. Click to close...":"Gallery. Click to expand..."}</Typography>
+          <BurstModeIcon/>
+          <Typography ml={1}>{expanded?"Click to close...":"Click to expand..."}</Typography>
         </AccordionSummary>
         <AccordionDetails>
           <Box ref={boxRef} sx={{backgroundColor:"#e1eaf2",minWidth:(thumb_width+16)*2+16 }} p={1}>
@@ -78,12 +80,17 @@ export default function PanZoomList({list,thumbnails=false,thumb_width=200,slide
             </ImageList>
           </Box>
         </AccordionDetails>
-      </Accordion>
-    }
+        </Accordion>
+      }
       {slides &&
-        list.map((file,index)=>
-        <PanZoomSVG key={index} src={file}/>
-      )}
-    </>
+        <Grid container spacing={{ xs: 2, md: 3 }} alignItems="center" justifyContent="space-evenly">
+          {list.map((file,index)=>
+            <Grid item key={index} xs={2} sx={{minWidth:400}}>
+              <PanZoomSlide src={file} height={200} />
+            </Grid>
+          )}
+        </Grid>
+      }
+    </Box>
   )
 }

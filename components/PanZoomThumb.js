@@ -1,5 +1,5 @@
 import { useCallback, useState, useEffect} from 'react';
-import PanZoomSVG from '../components/PanZoomSVG'
+import PanZoomSlide from '../components/PanZoomSlide'
 import {Box, Paper, ImageList,ImageListItem,ImageListItemBar,
   IconButton,Stack,Typography,Button,ListSubheader  } from '@mui/material';
 import InfoIcon from '@mui/icons-material/Info';
