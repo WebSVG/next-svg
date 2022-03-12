@@ -1,5 +1,6 @@
 import Head from 'next/head'
-import PanZoomList from '../components/PanZoomList'
+import PanZoomThumbsList from '../components/PanZoomThumbsList'
+import Tiger from '../public/tiger.svg'
 
 const svg_list =[
   'tiger2.svg',
@@ -29,7 +30,8 @@ export default function PanZoom() {
       <title>Pan Zoom</title>
       <link rel="icon" href="/favicon.ico" />
       </Head>
-      <PanZoomList list={svg_list} thumbnails={true} slides={true}/>
+      <PanZoomThumbsList list={svg_list} thumbnails={true}/>
+      <Tiger id="pz-tiger2.svg"/>
     </>
   )
 }

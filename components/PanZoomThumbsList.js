@@ -1,11 +1,8 @@
 import { useCallback, useState, useEffect} from 'react';
 import PanZoomSVG from '../components/PanZoomSVG'
+import PanZoomThumb from '../components/PanZoomThumb'
 import {Box, Paper, ImageList,ImageListItem,ImageListItemBar,
   IconButton,Stack,Typography,Button,ListSubheader  } from '@mui/material';
-import InfoIcon from '@mui/icons-material/Info';
-import KeyboardArrowDownIcon from '@mui/icons-material/KeyboardArrowDown';
-import LinkIcon from '@mui/icons-material/Link';
-import ArrowDownwardIcon from '@mui/icons-material/ArrowDownward';
 
 //https://usehooks.com/useWindowSize/
 function useWindowSize() {
@@ -27,14 +24,7 @@ function useWindowSize() {
   return windowSize;
 }
 
-function srcset(image, size, rows = 1, cols = 1) {
-  return {
-    src: `${image}?w=${size * cols}&h=${size * rows}&fit=crop&auto=format`,
-    srcSet: `${image}?w=${size * cols}&h=${size * rows}&fit=crop&auto=format&dpr=2 2x`,
-  };
-}
-
-export default function PanZoomList({list,thumbnails=false,thumb_width=200,slides=false}) {
+export default function PanZoomThumbsList({list,thumbnails=false,thumb_width=200,slides=false}) {
   const [nbcols,setNbCols] = useState(3)
   const size = useWindowSize();
 
@@ -67,39 +57,7 @@ export default function PanZoomList({list,thumbnails=false,thumb_width=200,slide
         <ImageList variant="masonry" cols={nbcols} gap={4} sx={{ minWidth:(thumb_width+16)*2 }}>
             {thumb_list.map((item,index) => (
                 <ImageListItem key={index} >
-            <Box mb={1} >
-              <Paper >
-              <Stack
-                    direction="column"
-                    alignItems="center"
-                  >
-                    <Box p={1}>
-                      <img width={thumb_width}
-                        src={item.thumb}
-                        alt={item.href}
-                        onClick={()=>{document.getElementById(`pz-fs-${item.name}.svg`).click()}}
-                        style={{cursor:"zoom-in"}}
-                      />
-                    </Box>
-                  </Stack>
-                  <Stack
-                      direction="row"
-                      alignItems="center"
-                      justifyContent="space-between"
-                    >
-                      <Typography component="div" ml={2} sx={{ flexGrow: 1, maxWidth:120 }}>
-                                        {item.name}
-                      </Typography>
-                      <IconButton
-                        sx={{ color: 'black' }}
-                        aria-label={`star ${item.title}`}
-                        href={`#${item.href}`}
-                      >
-                        <LinkIcon/>
-                      </IconButton>
-                  </Stack>  
-                  </Paper>
-            </Box>
+                  <PanZoomThumb item={item} thumb_width={thumb_width}/>
                 </ImageListItem>
           ))}
         </ImageList>

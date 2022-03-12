@@ -7,6 +7,7 @@ import Link from 'next/link'
 
 const pages = [
     {'name':'Masonry'    ,'href':''},
+    {'name':'NoSlides'    ,'href':'noslides'},
     {'name':'Grid'    ,'href':'grid'},
     {'name':'Quilted'    ,'href':'rows'},
 ]
