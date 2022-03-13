@@ -93,13 +93,11 @@ export default function PanZoomSlide({src,menu=false,height=400}) {
   function onButtonFit(){
     startPZ()
     utl.Fit(src,panzoomRef.current,boxRef.current)
-    stopPZ()
   }
   function onButtonTop(){
     startPZ()
     utl.Top(src,panzoomRef.current,boxRef.current)    
-    stopPZ()
-  }
+}
   function TestSVGjs(src){
     let svg = document.getElementById(src)
     if(svg){
