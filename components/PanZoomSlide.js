@@ -12,6 +12,7 @@ import FitScreenIcon from '@mui/icons-material/FitScreen';
 import ArrowUpwardIcon from '@mui/icons-material/ArrowUpward';
 import WidthIcon from '../public/width.svg'
 
+//needed to update state and use it outside react DOM on mouse event listener. See :
 //https://stackoverflow.com/questions/53845595/wrong-react-hooks-behaviour-with-event-listener
 function useStateRef(initialValue) {
   const [value, setValue] = useState(initialValue);
@@ -39,16 +40,13 @@ export default function PanZoomSlide({src,menu=false,height=400}) {
   const stackRef = useRef(null);
 
   function onFocusOut(){
-    stopPZ()
+    //stopPZ()
     setFocus(false)
     //console.log("focus out")
   }
   function onMouseDown(){
-    startPZ()
+    startPZ()//protected against restarts
     //console.log(`refFocus(${refFocus.current})`)
-    if(!refFocus.current){
-      utl.Fit(src,panzoomRef.current,boxRef.current)
-    }
     setFocus(true)
   }
   function onComponentUnmount(){
@@ -64,6 +62,8 @@ export default function PanZoomSlide({src,menu=false,height=400}) {
     if(loaded && divRef.current && !started.current){
       panzoomRef.current = panzoom(divRef.current, zoomOptions);
       started.current = true
+      utl.Fit(src,panzoomRef.current,boxRef.current)
+      //panzoomRef.current.on('transform', function(e) {});
       //console.log("pan zoom : created")
     }
   }
