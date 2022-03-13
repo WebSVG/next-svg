@@ -26,12 +26,12 @@ function useStateRef(initialValue) {
   return [value, setValue, ref];
 }
 
-export default function PanZoomSlide({src,menu=false,height=400}) {
+export default function PanZoomSlide({src,menu=false,width=600}) {
   const started = useRef(false)
   const [focus, setFocus,refFocus] = useStateRef(false)
   const [loaded, setLoaded] = useState(false)
   const [open, setOpen] = useState(false);
-  const [width,setWidth] = useState(height*2)
+  const [height,setHeight] = useState(Math.round(width/2))
 
   const zoomOptions = {
     minZoom: 0.1,
@@ -82,10 +82,10 @@ export default function PanZoomSlide({src,menu=false,height=400}) {
   
   useEffect(()=>{
     //console.log(`width is now (${width})`)
-    const target_width = height*2
-    if(width!=target_width){  //1) width only mismatch if height has changed
-      setWidth(target_width)
-    }else{                    //2) width match, already applied after render
+    const target_height = Math.round(width/2)
+    if(height!=target_height){  //1) height only mismatch if width has changed
+      setHeight(target_height)
+    }else{                    //2) height match, already applied after render
       //console.log(`shold fit now with new width (${width})`)
       utl.Fit(src,panzoomRef.current,boxRef.current)
     }
