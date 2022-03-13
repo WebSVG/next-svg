@@ -36,11 +36,7 @@ export default function PanZoomSlide({src,menu=false,height=400}) {
   const zoomOptions = {
     minZoom: 0.1,
     maxZoom:4,
-    beforeWheel:function(e) {
-        var shouldIgnore = !refFocus.current;
-        console.log(shouldIgnore)
-        return shouldIgnore;
-      }
+    beforeWheel:(e)=>!refFocus.current
     }
   const boxRef = useRef(null);
   const divRef = useRef(null);

@@ -1,11 +1,9 @@
-import { useCallback, useState, useEffect} from 'react';
-import PanZoomSlide from '../components/PanZoomSlide'
+import { useCallback, useState, useEffect, useMemo} from 'react';
 import PanZoomThumb from '../components/PanZoomThumb'
-import {Box, ImageList,ImageListItem,Grid,
+import {Box, ImageList,ImageListItem,
   Typography,Accordion,AccordionSummary,AccordionDetails  } from '@mui/material';
 import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
 import BurstModeIcon from '@mui/icons-material/BurstMode';
-import ImageIcon from '@mui/icons-material/Image';
 
 //https://usehooks.com/useWindowSize/
 function useWindowSize() {
@@ -27,7 +25,7 @@ function useWindowSize() {
   return windowSize;
 }
 
-export default function PanZoomList({list,thumbnails=false,thumb_width=200,slides=false,default_expanded=false}) {
+export default function Gallery({list,thumb_width=200,default_expanded=false}) {
   const [expanded,setExpanded] = useState(default_expanded)
   const [nbcols,setNbCols] = useState(3)
   const size = useWindowSize();
@@ -45,19 +43,16 @@ export default function PanZoomList({list,thumbnails=false,thumb_width=200,slide
     }
     },[size]);
 
-
-  let thumb_list = []
-  if(thumbnails){
-    thumb_list = list.map((item)=>({
-      src:item,
-      thumb:item.replace('.svg','.thumb.png'),
-      href:`pz-${item}`,
-      name:item.replace('.svg','')
-    }))
-  }
+  //todo useMemo
+  const thumb_list = useMemo(()=>{return list.map((item)=>({
+    src:item,
+    thumb:item.replace('.svg','.thumb.png'),
+    href:`pz-${item}`,
+    name:item.replace('.svg','')
+  }))})
+    
   return (
     <Box mb={2}>
-      {thumbnails &&
         <Accordion 
           sx={{backgroundColor:"#bac9d6"}} 
           expanded={expanded}
@@ -82,16 +77,6 @@ export default function PanZoomList({list,thumbnails=false,thumb_width=200,slide
           </Box>
         </AccordionDetails>
         </Accordion>
-      }
-      {slides &&
-        <Grid container spacing={{ xs: 2, md: 3 }} alignItems="center" justifyContent="space-evenly">
-          {list.map((file,index)=>
-            <Grid item key={index} xs={2} sx={{minWidth:slideHeight*2}}>
-              <PanZoomSlide src={file} height={slideHeight} menu/>
-            </Grid>
-          )}
-        </Grid>
-      }
     </Box>
   )
 }
