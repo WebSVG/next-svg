@@ -80,24 +80,32 @@ export default function PanZoomSlide({src,menu=false,height=400}) {
     }
   }
   
+  useEffect(()=>{
+    //console.log(`width is now (${width})`)
+    const target_width = height*2
+    if(width!=target_width){  //1) width only mismatch if height has changed
+      setWidth(target_width)
+    }else{                    //2) width match, already applied after render
+      //console.log(`shold fit now with new width (${width})`)
+      utl.Fit(src,panzoomRef.current,boxRef.current)
+    }
+  },[height,width])
+
   useEffect(() => {
     if((loaded) && (divRef.current) && (!started.current)){
-      setWidth(height*2)
       //console.log("adding listener")
       boxRef.current.addEventListener("mousedown", onMouseDown,true)
       boxRef.current.addEventListener("focusout", onFocusOut)
       let svg = document.getElementById(src)
       if(svg != null){
         startPZ()
-        utl.Fit(src,panzoomRef.current,boxRef.current)
         stopPZ()
       }
     }
     return onComponentUnmount
-  }, [loaded,height]);
+  }, [loaded]);
   function onButtonFit(){
     startPZ()
-    utl.Fit(src,panzoomRef.current,boxRef.current)
   }
   function onButtonTop(){
     startPZ()
