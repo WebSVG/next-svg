@@ -12,9 +12,22 @@ import FitScreenIcon from '@mui/icons-material/FitScreen';
 import ArrowUpwardIcon from '@mui/icons-material/ArrowUpward';
 import WidthIcon from '../public/width.svg'
 
+//https://stackoverflow.com/questions/53845595/wrong-react-hooks-behaviour-with-event-listener
+function useStateRef(initialValue) {
+  const [value, setValue] = useState(initialValue);
+
+  const ref = useRef(value);
+
+  useEffect(() => {
+    ref.current = value;
+  }, [value]);
+
+  return [value, setValue, ref];
+}
+
 export default function PanZoomSlide({src,menu=false,height=400}) {
   const started = useRef(false)
-  const [focus, setFocus] = useState(false)
+  const [focus, setFocus,refFocus] = useStateRef(false)
   const [loaded, setLoaded] = useState(false)
   const [open, setOpen] = useState(false);
 
@@ -28,12 +41,15 @@ export default function PanZoomSlide({src,menu=false,height=400}) {
   function onFocusOut(){
     stopPZ()
     setFocus(false)
-    console.log("focus out")
+    //console.log("focus out")
   }
   function onMouseDown(){
     startPZ()
+    //console.log(`refFocus(${refFocus.current})`)
+    if(!refFocus.current){
+      utl.Fit(src,panzoomRef.current,boxRef.current)
+    }
     setFocus(true)
-    //window.setTimeout(()=>{boxRef.current.focus();console.log("focus")},50)
   }
   function onComponentUnmount(){
     stopPZ()
@@ -74,6 +90,16 @@ export default function PanZoomSlide({src,menu=false,height=400}) {
     }
     return onComponentUnmount
   }, [loaded]);
+  function onButtonFit(){
+    startPZ()
+    utl.Fit(src,panzoomRef.current,boxRef.current)
+    stopPZ()
+  }
+  function onButtonTop(){
+    startPZ()
+    utl.Top(src,panzoomRef.current,boxRef.current)    
+    stopPZ()
+  }
   function TestSVGjs(src){
     let svg = document.getElementById(src)
     if(svg){
@@ -97,9 +123,9 @@ export default function PanZoomSlide({src,menu=false,height=400}) {
           spacing={2}
           justifyContent="center"
           >
-          <Button onClick={()=>{onMouseDown();utl.Fit(src,panzoomRef.current,boxRef.current)}}
+          <Button onClick={()=>{onButtonFit()}}
                   variant="text"><FitScreenIcon/> fit</Button>
-          <Button onClick={()=>{onMouseDown();utl.Top(src,panzoomRef.current,boxRef.current)}}
+          <Button onClick={()=>{onButtonTop()}}
                   variant="text"><WidthIcon/></Button>
           <Button onClick={()=>{TestSVGjs(src)}} variant="text"><EditIcon/></Button>
           <Button onClick={()=>{setOpen(true)}} variant="text" id={`pz-fs-${src}`}><FullscreenIcon/></Button>

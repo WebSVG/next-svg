@@ -31,6 +31,7 @@ export default function PanZoomList({list,thumbnails=false,thumb_width=200,slide
   const [expanded,setExpanded] = useState(default_expanded)
   const [nbcols,setNbCols] = useState(3)
   const size = useWindowSize();
+  const slideHeight = 300
 
   const boxRef = useCallback(node=>{
     if(node != null){
@@ -85,8 +86,8 @@ export default function PanZoomList({list,thumbnails=false,thumb_width=200,slide
       {slides &&
         <Grid container spacing={{ xs: 2, md: 3 }} alignItems="center" justifyContent="space-evenly">
           {list.map((file,index)=>
-            <Grid item key={index} xs={2} sx={{minWidth:400}}>
-              <PanZoomSlide src={file} height={200} />
+            <Grid item key={index} xs={2} sx={{minWidth:slideHeight*2}}>
+              <PanZoomSlide src={file} height={slideHeight} menu/>
             </Grid>
           )}
         </Grid>
