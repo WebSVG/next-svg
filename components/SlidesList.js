@@ -10,6 +10,7 @@ const AppSlider = styled(Slider)(({theme})=>({
   height:10,
   '& .MuiSlider-track': {
       border: 'none',
+      opacity: 0.8,
       height:10,
       backgroundColor: '#fff',
     },
@@ -18,7 +19,7 @@ const AppSlider = styled(Slider)(({theme})=>({
       backgroundColor: '#fff',
     },
     '& .MuiSlider-thumb': {
-      height: 40,
+      height: 30,
       width: 20,
       backgroundColor: '#bfbfbf',
       border: '0px solid currentColor',

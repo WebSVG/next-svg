@@ -2,14 +2,13 @@ import React, { useRef, useState, useEffect} from 'react';
 import panzoom from 'panzoom';
 import {    Paper, Box, Divider, Stack, Button } from '@mui/material';
 import PanZoomModal from '../components/PanZoomModal'
+import PositionButton from '../components/PositionButton'
 import * as utl from './svg_utils'
 import { SVG as SVGjs } from '@svgdotjs/svg.js'
 import SVG from 'react-inlinesvg';
 import FullscreenIcon from '@mui/icons-material/Fullscreen';
 import EditIcon from '@mui/icons-material/Edit';
-import CloseIcon from '@mui/icons-material/Close';
 import FitScreenIcon from '@mui/icons-material/FitScreen';
-import ArrowUpwardIcon from '@mui/icons-material/ArrowUpward';
 import WidthIcon from '../public/width.svg'
 
 //needed to update state and use it outside react DOM on mouse event listener. See :
@@ -106,6 +105,7 @@ export default function PanZoomSlide({src,menu=false,width=600}) {
   }, [loaded]);
   function onButtonFit(){
     startPZ()
+    utl.Fit(src,panzoomRef.current,boxRef.current)
   }
   function onButtonTop(){
     startPZ()
@@ -139,11 +139,20 @@ export default function PanZoomSlide({src,menu=false,width=600}) {
           <Button onClick={()=>{onButtonTop()}}
                   variant="text"><WidthIcon/></Button>
           <Button onClick={()=>{TestSVGjs(src)}} variant="text"><EditIcon/></Button>
-          <Button onClick={()=>{setOpen(true)}} variant="text" id={`pz-fs-${src}`}><FullscreenIcon/></Button>
+          <Button onClick={()=>{setOpen(true)}} variant="text"><FullscreenIcon/></Button>
         </Stack>
         }
             <Box ref={boxRef} 
-                 sx={{  height:height, overflow: 'hidden'}}>
+                 sx={{  height:height, overflow: 'hidden', position:'relative'}}>
+                {false &&
+                <>
+                  <PositionButton position="tr" onClick={()=>{setOpen(true)}}>
+                  <FullscreenIcon/>
+                  </PositionButton>
+                  <PositionButton position="tl" onClick={()=>{onButtonFit()}}>
+                  <FitScreenIcon/>
+                  </PositionButton>
+                </>}
                 <div ref={divRef} >
                   <SVG src={src} id={src} onLoad={()=>{setLoaded(true)}} />
                 </div>
