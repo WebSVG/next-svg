@@ -39,7 +39,6 @@ deployment repo : https://github.com/wassfila/next-svg-vercel
 ## TODOs
 * optional slides view
 * adjustable slides size
-* retreive panzoom coordinate when regaining the focus
 * deep linking
 * top on svg with `width=800px` not working
 * handle images not SVGs only
@@ -47,7 +46,6 @@ deployment repo : https://github.com/wassfila/next-svg-vercel
 ## Limitations
 * in Chrome touch generates : "Intervention unable to preventdefault inside passive event"
 * timeout of 1 ms needed for second Modal open otherwise svg is undefined
-* focusout not reliable
 * panzoom lib cannot act on shadow svg documents therefore it is accepted to rely on javascript dynamic loading of svg instead of the `embed` or `object`
 # Code description
 ## working sample
