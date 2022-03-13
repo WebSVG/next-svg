@@ -32,7 +32,7 @@ export default function PanZoom() {
       <link rel="icon" href="/favicon.ico" />
       </Head>
       <Typography p={1}>{description}</Typography>
-      <SlidesList list={svg_list} slides/>
+      <SlidesList list={svg_list}/>
     </>
   )
 }

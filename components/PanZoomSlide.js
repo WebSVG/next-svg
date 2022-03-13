@@ -31,8 +31,8 @@ export default function PanZoomSlide({src,menu=false,height=400}) {
   const [focus, setFocus,refFocus] = useStateRef(false)
   const [loaded, setLoaded] = useState(false)
   const [open, setOpen] = useState(false);
+  const [width,setWidth] = useState(height*2)
 
-  const boxHeight = height
   const zoomOptions = {
     minZoom: 0.1,
     maxZoom:4,
@@ -81,7 +81,8 @@ export default function PanZoomSlide({src,menu=false,height=400}) {
   }
   
   useEffect(() => {
-    if(loaded && divRef.current){
+    if((loaded) && (divRef.current) && (!started.current)){
+      setWidth(height*2)
       //console.log("adding listener")
       boxRef.current.addEventListener("mousedown", onMouseDown,true)
       boxRef.current.addEventListener("focusout", onFocusOut)
@@ -93,7 +94,7 @@ export default function PanZoomSlide({src,menu=false,height=400}) {
       }
     }
     return onComponentUnmount
-  }, [loaded]);
+  }, [loaded,height]);
   function onButtonFit(){
     startPZ()
     utl.Fit(src,panzoomRef.current,boxRef.current)
@@ -115,7 +116,7 @@ export default function PanZoomSlide({src,menu=false,height=400}) {
   }
   return (
     <>
-    <Box id="mainContent" m={1} sx={{width:boxHeight*2, border: focus?'2px solid':'0px',cursor:'grab'}}>
+    <Box id="mainContent" m={1} sx={{width:width, border: focus?'2px solid':'0px',cursor:'grab'}}>
       <Paper elevation={focus?10:2}>
         <Stack  id={`pz-${src}`} ref={stackRef}>
         {menu&&
@@ -134,7 +135,7 @@ export default function PanZoomSlide({src,menu=false,height=400}) {
         </Stack>
         }
             <Box ref={boxRef} 
-                 sx={{  height:boxHeight, overflow: 'hidden'}}>
+                 sx={{  height:height, overflow: 'hidden'}}>
                 <div ref={divRef} >
                   <SVG src={src} id={src} onLoad={()=>{setLoaded(true)}} />
                 </div>
