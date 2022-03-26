@@ -4,6 +4,7 @@ import {    Paper, Box, Stack, Button, Typography } from '@mui/material';
 import PanZoomModal from '../components/PanZoomModal'
 import * as utl from './svg_utils'
 import FullscreenIcon from '@mui/icons-material/Fullscreen';
+import {useRouter} from 'next/router';
 
 export default function PanZoomSlide({src,menu=false,width=600}) {
   const started = useRef(false)
@@ -11,6 +12,7 @@ export default function PanZoomSlide({src,menu=false,width=600}) {
   const [open, setOpen] = useState(false);
   const [height,setHeight] = useState(Math.round(width/2))
   const [title,setTitle] = useState(src.replace(/\.[^/.]+$/, ""))
+  const router = useRouter()
 
   const zoomOptions = {
     minZoom: 0.1,
@@ -20,6 +22,8 @@ export default function PanZoomSlide({src,menu=false,width=600}) {
   const divRef = useRef(null);
   const panzoomRef = useRef(null);
   const stackRef = useRef(null);
+
+
 
   function onComponentUnmount(){
     stopPZ()
@@ -31,6 +35,7 @@ export default function PanZoomSlide({src,menu=false,width=600}) {
       panzoomRef.current = panzoom(divRef.current, zoomOptions);
       started.current = true
       utl.Fit(src,panzoomRef.current,boxRef.current)
+      //why not useRouter, because it has a bug : https://github.com/vercel/next.js/discussions/13220
       //panzoomRef.current.on('transform', function(e) {});
       //console.log("pan zoom : created")
     }
@@ -71,10 +76,31 @@ export default function PanZoomSlide({src,menu=false,width=600}) {
             utl.setup_links(src,model)
           })
         }
+        if(location.search){
+          const search = location.search.substring(1)
+          const query = JSON.parse('{"' + decodeURI(search.replace(/&/g, "\",\"").replace(/=/g,"\":\"")) + '"}')
+          if(("modal" in query) && query.modal === src){
+            openModal()
+          }
+        }
       }
     }
     return onComponentUnmount
   }, [loaded]);
+  function openModal(){
+    if(!open){
+      setOpen(true)
+      router.push({
+        query: { modal: src }
+      })
+    }
+  }
+  function closeModal(){
+    router.push({
+      query: {}
+    })
+    setOpen(false)
+  }
   return (
     <>
     <Box id="mainContent" m={1} sx={{width:width}}>
@@ -87,7 +113,7 @@ export default function PanZoomSlide({src,menu=false,width=600}) {
           justifyContent="space-between"
           >
           <Typography variant="h6" p={1}>{title}</Typography>
-          <Button sx={{zIndex:'modal',backgroundColor:'#ffffffaa'}} onClick={()=>{setOpen(true)}} variant="text"><FullscreenIcon/></Button>
+          <Button sx={{zIndex:'modal',backgroundColor:'#ffffffaa'}} onClick={()=>{openModal()}} variant="text"><FullscreenIcon/></Button>
         </Stack>
         }
             <Box ref={boxRef} 
@@ -99,7 +125,7 @@ export default function PanZoomSlide({src,menu=false,width=600}) {
             </Stack>
         </Paper>
     </Box>
-    <PanZoomModal src={src} open={open} handleClose={()=>{setOpen(false)}}/>
+    <PanZoomModal src={src} open={open} handleClose={()=>{closeModal()}}/>
     </>
   )
 }
