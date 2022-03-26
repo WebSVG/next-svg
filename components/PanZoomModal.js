@@ -40,6 +40,7 @@ const buttonRestStyle = {
 }
 
 export default function PanZoom({src,open,handleClose}) {
+  const text_list = useRef(new Array())
   const started = useRef(false)
   const [loaded, setLoaded] = useState(false)
   const [buttonActive, setButtonActive] = useState(true)
@@ -60,22 +61,29 @@ export default function PanZoom({src,open,handleClose}) {
     boxRef.current = node
     startPZ()
     },[loaded,open]);
-  
+  function on_svg_ready(){
+    utl.Fit(modal_src,panzoomRef.current,boxRef.current)
+    console.log("Modal pan zoom : created")
+    if(utl.has_model(src)){
+      utl.fetch_json(src.replace(".svg",".json")).then((model)=>{
+        utl.setup_links(modal_src,model)
+      })
+    }
+  }
   function startPZ(){
+    //console.log(`divRef.current:${divRef.current} ; boxRef.current:${boxRef.current} ; loaded:${loaded} ; started.current:${started.current}`)
     if((divRef.current != null) && (boxRef.current != null) && (loaded) && (!started.current)){
       panzoomRef.current = panzoom(divRef.current, zoomOptions);
       started.current=true
       setButtonActive(true)
       setTimeout(()=>{setButtonActive(false)},2000)
-      let svg = document.getElementById(modal_src)
+      let svg = utl.get_svg_id(modal_src)
       if(svg){
-        utl.Fit(modal_src,panzoomRef.current,boxRef.current)
-        console.log("Modal pan zoom : created")
+        on_svg_ready()
       }else{
         //TODO not clear why this timeout is needed, the svg is underfined otherwise
         setTimeout(()=>{
-          utl.Fit(modal_src,panzoomRef.current,boxRef.current)
-          console.log("Modal pan zoom : created fitted after delay")
+          on_svg_ready()
         },1)
       }
     }

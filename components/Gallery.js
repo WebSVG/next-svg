@@ -48,7 +48,7 @@ export default function Gallery({list,thumb_width=200,default_expanded=false}) {
     src:item,
     thumb:item.replace('.svg','.thumb.png'),
     href:`pz-${item}`,
-    name:item.replace('.svg','')
+    title:item.replace(/\.[^/.]+$/, "")//remove path and extension - no title from SVG as SVGs beyond scope
   }))})
     
   return (

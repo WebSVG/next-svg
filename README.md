@@ -51,7 +51,7 @@ deployment repo : https://github.com/wassfila/next-svg-vercel
 ## Limitations
 * in Chrome touch generates : "Intervention unable to preventdefault inside passive event"
 * timeout of 1 ms needed for second Modal open otherwise svg is undefined
-* panzoom lib cannot act on shadow svg documents therefore it is accepted to rely on javascript dynamic loading of svg instead of the `embed` or `object`
+* panzoom lib cannot act on shadow svg documents so cannot be used with svgs within `object`. As injecting svgs in the same page can corrupt ones using global styles defines, panzoom can only handle one document per pag e.g. in a Modal.
 # Code description
 ## working sample
 * `inline.js` : using `panzoom` and `react-inlinesvg`.
@@ -79,7 +79,7 @@ deployment repo : https://github.com/wassfila/next-svg-vercel
     * cannot be imported in nextjs due to usage of window (front end only) in the module
     * Browser only integration needs to return with a `Script` tag referencing a manually copied .js
     * svg does not pan all over the parent but in the firstly defined creation window
-
+* `timmywill / panzoom` : https://github.com/timmywil/panzoom
 ## SVG files
 * files with top svg element containing width and height attributes will have fixed default width and height
 * svg files without and with viwBox only will have responsive width

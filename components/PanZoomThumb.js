@@ -33,11 +33,11 @@ export default function PanZoomThmb({item,thumb_width}) {
           justifyContent="space-between"
           >
             <Typography component="div" ml={2} sx={{ flexGrow: 1, maxWidth:120 }}>
-            {item.name}
+            {item.title}
             </Typography>
             <IconButton
             sx={{ color: 'black' }}
-            aria-label={`star ${item.title}`}
+            aria-label={item.title}
             href={`#${item.href}`}
             >
             <LinkIcon/>

@@ -9,7 +9,6 @@ import GitHubIcon from '@mui/icons-material/GitHub';
 const pages = [
     {'name':'Slides'    ,'href':''},
     {'name':'Gallery'    ,'href':'gallery'},
-    {'name':'Toc','href':'toc'},
 ]
 
 
