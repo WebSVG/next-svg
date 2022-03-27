@@ -111,6 +111,7 @@ export default function PanZoomSlide({src,menu=false,width=600}) {
     }
     return onComponentUnmount
   }, [loaded]);
+  //TODO update basePath fom config in this file and in svg_utils line 162
   return (
     <>
     <Box id="mainContent" m={1} sx={{width:width}}>
@@ -136,7 +137,7 @@ export default function PanZoomSlide({src,menu=false,width=600}) {
             <Box ref={boxRef} 
                  sx={{  height:height,  position:'relative'}}>
                 <div ref={divRef} >
-                  <object type="image/svg+xml" data={src} id={src} onLoad={()=>{setLoaded(true)}} />
+                  <object type="image/svg+xml" data={`/next-svg/${src}`} id={src} onLoad={()=>{setLoaded(true)}} />
                 </div>
             </Box>
             </Stack>

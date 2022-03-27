@@ -376,7 +376,7 @@ function PanZoomSlide({ src , menu =false , width =600  }) {
                                     ref: divRef,
                                     children: /*#__PURE__*/ react_jsx_runtime__WEBPACK_IMPORTED_MODULE_0__.jsx("object", {
                                         type: "image/svg+xml",
-                                        data: src,
+                                        data: `/next-svg/${src}`,
                                         id: src,
                                         onLoad: ()=>{
                                             setLoaded(true);
@@ -569,7 +569,7 @@ function Top(src, pzRef, boxRef) {
     pzRef.zoomAbs(zoomX, zoomY, fit_width_zoom);
 }
 async function fetch_json(json_filename) {
-    const response = await fetch(json_filename);
+    const response = await fetch(`/next-svg/${json_filename}`);
     return await response.json();
 }
 function setup_links(svg_id, json_data) {

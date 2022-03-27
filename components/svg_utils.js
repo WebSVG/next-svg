@@ -159,7 +159,7 @@ function Top(src,pzRef,boxRef){
 }
 
 async function fetch_json(json_filename){
-  const response = await fetch(json_filename)
+  const response = await fetch(`/next-svg/${json_filename}`)
   return await response.json()
 }
 
