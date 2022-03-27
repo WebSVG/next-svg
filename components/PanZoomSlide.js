@@ -30,7 +30,9 @@ export default function PanZoomSlide({src,menu=false,width=600}) {
     if(loaded && divRef.current && !started.current){
       panzoomRef.current = panzoom(divRef.current, zoomOptions);
       started.current = true
-      on_svg_pz_ready()
+      if(utl.get_svg_id(src)){//protect against mysterious react reload cases
+        on_svg_pz_ready()
+      }
     }
   }
   function stopPZ(){

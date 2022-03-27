@@ -4,6 +4,7 @@ import { Modal,Box, Button,Stack } from '@mui/material';
 import * as utl from './svg_utils'
 import SVG from 'react-inlinesvg';
 import CloseIcon from '@mui/icons-material/Close';
+import config from '../next.config'
 
 const style = {
   position: 'absolute',
@@ -61,7 +62,7 @@ export default function PanZoom({src,open,handleClose}) {
     boxRef.current = node
     startPZ()
     },[loaded,open]);
-  function on_svg_ready(){
+  function on_svg_pz_ready(){
     utl.Fit(modal_src,panzoomRef.current,boxRef.current)
     console.log("Modal pan zoom : created")
     if(utl.has_model(src)){
@@ -77,14 +78,8 @@ export default function PanZoom({src,open,handleClose}) {
       started.current=true
       setButtonActive(true)
       setTimeout(()=>{setButtonActive(false)},2000)
-      let svg = utl.get_svg_id(modal_src)
-      if(svg){
-        on_svg_ready()
-      }else{
-        //TODO not clear why this timeout is needed, the svg is underfined otherwise
-        setTimeout(()=>{
-          on_svg_ready()
-        },1)
+      if(utl.get_svg_id(modal_src)){//protect against mysterious react reload cases
+        on_svg_pz_ready()
       }
     }
     return
@@ -111,7 +106,7 @@ export default function PanZoom({src,open,handleClose}) {
               sx={buttonActive?buttonActiveStyle:buttonRestStyle}
                 ><CloseIcon/></Button>
         <div ref={divMeasure}>
-          <SVG src={src} id={modal_src} onLoad={()=>{setLoaded(true)}}/>
+          <SVG src={`${config.basePath}/${src}`} id={modal_src} onLoad={()=>{setLoaded(true)}}/>
         </div>
         </Box>
     </Modal>
