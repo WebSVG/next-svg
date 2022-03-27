@@ -1,6 +1,10 @@
 import panzoom from 'panzoom';
 import { SVG as SVGjs } from '@svgdotjs/svg.js'
 
+function search_to_query(search){
+  return JSON.parse('{"' + decodeURI(search.replace(/&/g, "\",\"").replace(/=/g,"\":\"")) + '"}')
+}
+
 function get_svg_id(src){
   let el = document.getElementById(src)
   if(!el){
@@ -225,5 +229,6 @@ export{
   get_svg_id,
   get_title,
   fetch_json,
-  has_model
+  has_model,
+  search_to_query
 }
