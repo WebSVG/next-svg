@@ -1,9 +1,6 @@
 {
   "/_app": "pages/_app.js",
-  "/gallery": "pages/gallery.html",
-  "/": "pages/index.html",
-  "/toc": "pages/toc.html",
   "/_error": "pages/_error.js",
   "/_document": "pages/_document.js",
-  "/404": "pages/404.html"
+  "/": "pages/index.js"
 }
