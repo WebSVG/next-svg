@@ -6,5 +6,7 @@ module.exports = {
       });
   
       return config;
-    }
+    },
+    distDir: 'docs',
+    basePath: '/next-svg',
   };
