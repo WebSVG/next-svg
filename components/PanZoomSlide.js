@@ -6,6 +6,7 @@ import * as utl from './svg_utils'
 import FullscreenIcon from '@mui/icons-material/Fullscreen';
 import LinkIcon from '@mui/icons-material/Link';
 import {useRouter} from 'next/router';
+import config from '../next.config'
 
 export default function PanZoomSlide({src,menu=false,width=600}) {
   const started = useRef(false)
@@ -137,7 +138,7 @@ export default function PanZoomSlide({src,menu=false,width=600}) {
             <Box ref={boxRef} 
                  sx={{  height:height,  position:'relative'}}>
                 <div ref={divRef} >
-                  <object type="image/svg+xml" data={`/next-svg/${src}`} id={src} onLoad={()=>{setLoaded(true)}} />
+                  <object type="image/svg+xml" data={`${config.basePath}/${src}`} id={src} onLoad={()=>{setLoaded(true)}} />
                 </div>
             </Box>
             </Stack>

@@ -1,5 +1,6 @@
 import panzoom from 'panzoom';
 import { SVG as SVGjs } from '@svgdotjs/svg.js'
+import config from '../next.config'
 
 function search_to_query(search){
   return JSON.parse('{"' + decodeURI(search.replace(/&/g, "\",\"").replace(/=/g,"\":\"")) + '"}')
@@ -159,7 +160,7 @@ function Top(src,pzRef,boxRef){
 }
 
 async function fetch_json(json_filename){
-  const response = await fetch(`/next-svg/${json_filename}`)
+  const response = await fetch(`${config.basePath}/${json_filename}`)
   return await response.json()
 }
 
