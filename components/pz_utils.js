@@ -25,10 +25,28 @@ function get_svg_id(src){
   }
 }
 
-function get_svg_size(src){
-  let svg = get_svg_id(src)
-  let bbox = svg.getBBox();
-  return {svg_width:bbox.width,svg_height:bbox.height}
+function get_img_id(src){
+  let el = document.getElementById(src)
+  if(!el){
+    return null
+  }
+  if(el.tagName == "IMG"){
+    return el
+  }
+}
+
+function get_size(src){
+  if(src.endsWith(".svg")){
+    let svg = get_svg_id(src)
+    let bbox = svg.getBBox();
+    return {img_width:bbox.width,img_height:bbox.height}
+  }
+  else{
+    let img_id = get_img_id(src)
+    let res = {img_width:img_id.naturalWidth,img_height:img_id.naturalHeight}
+    console.log(res)
+    return res
+  }
 }
 
 
@@ -50,17 +68,19 @@ function Center(src,pzRef,boxRef){
   softReset(pzRef)
   let svg = get_svg_id(src)
   //let cbox = svg.getBoundingClientRect();
-  let {svg_width, svg_height} = get_svg_size(src)
-  let scale = boxRef.clientWidth / svg_width
-  if(svg.hasAttributeNS(null,"width")){
-    let client_width = svg.getAttributeNS(null,"width")
-    if(client_width.endsWith("px")){
-      client_width = Number(client_width.slice(0,-2))
+  let {img_width, img_height} = get_size(src)
+  let scale = boxRef.clientWidth / img_width
+  if(src.endsWith(".svg")){
+    if(svg.hasAttributeNS(null,"width")){
+      let client_width = svg.getAttributeNS(null,"width")
+      if(client_width.endsWith("px")){
+        client_width = Number(client_width.slice(0,-2))
+      }
+      scale = client_width / img_width
     }
-    scale = client_width / svg_width
   }
-  let offsetY         = boxRef.clientHeight/2 - (svg_height*scale)/2
-  let offsetX         = boxRef.clientWidth/2 - (svg_width*scale)/2
+  let offsetY         = boxRef.clientHeight/2 - (img_height*scale)/2
+  let offsetX         = boxRef.clientWidth/2 - (img_width*scale)/2
   pzRef.moveTo(offsetX, offsetY);
   console.log(`moveto (${offsetX},${offsetY})`)
   return
@@ -69,62 +89,68 @@ function Center(src,pzRef,boxRef){
 function FitHeight(src,pzRef,boxRef){
   if(! pzRef) return
   softReset(pzRef)
-  let svg = get_svg_id(src)
   //let cbox = svg.getBoundingClientRect();
-  let {svg_width, svg_height} = get_svg_size(src)
-  let scale = boxRef.clientWidth / svg_width
-  if(svg.hasAttributeNS(null,"width")){
-    let client_width = svg.getAttributeNS(null,"width")
-    if(client_width.endsWith("px")){
-      client_width = Number(client_width.slice(0,-2))
+  let {img_width, img_height} = get_size(src)
+  let scale = 1
+  if(src.endsWith(".svg")){
+    scale = boxRef.clientWidth / img_width
+    let svg = get_svg_id(src)
+    if(svg.hasAttributeNS(null,"width")){
+      let client_width = svg.getAttributeNS(null,"width")
+      if(client_width.endsWith("px")){
+        client_width = Number(client_width.slice(0,-2))
+      }
+      scale = client_width / img_width
     }
-    scale = client_width / svg_width
   }
   //console.log(`scale = ${scale}`)
-  let offsetY         = boxRef.clientHeight/2 - (svg_height*scale)/2
-  let offsetX         = boxRef.clientWidth/2 - (svg_width*scale)/2
+  let offsetY         = boxRef.clientHeight/2 - (img_height*scale)/2
+  let offsetX         = boxRef.clientWidth/2 - (img_width*scale)/2
   pzRef.moveTo(offsetX, offsetY);
-  //console.log(`moveTo (${offsetX},${offsetY})`)
+  console.log(`moveTo (${offsetX},${offsetY})`)
 
-  let cbox = svg.getBoundingClientRect();
   let zoomX           = boxRef.clientWidth/2
   let zoomY           = boxRef.clientHeight/2
-  let fit_height_zoom  = boxRef.clientHeight/(svg_height*scale)
+  let fit_height_zoom  = boxRef.clientHeight/(img_height*scale)
   pzRef.zoomAbs(zoomX, zoomY, fit_height_zoom);
-  //console.log(`zoomAbs (${zoomX},${zoomY},${fit_height_zoom})`)
+  console.log(`zoomAbs (${zoomX},${zoomY},${fit_height_zoom})`)
 }
 function FitWidth(src,pzRef,boxRef){
   if(! pzRef) return
   softReset(pzRef)
-  let svg = get_svg_id(src)
   //let cbox = svg.getBoundingClientRect();
-  let {svg_width, svg_height} = get_svg_size(src)
-  let scale = boxRef.clientWidth / svg_width
-  if(svg.hasAttributeNS(null,"width")){
-    let client_width = svg.getAttributeNS(null,"width")
-    if(client_width.endsWith("px")){
-      client_width = Number(client_width.slice(0,-2))
+  let {img_width, img_height} = get_size(src)
+  console.log(`boxRef : (${boxRef.clientWidth} , ${boxRef.clientHeight})`)
+  let scale = 1
+  if(src.endsWith(".svg")){
+    scale = boxRef.clientWidth / img_width
+    let svg = get_svg_id(src)
+    if(svg.hasAttributeNS(null,"width")){
+      let client_width = svg.getAttributeNS(null,"width")
+      if(client_width.endsWith("px")){
+        client_width = Number(client_width.slice(0,-2))
+      }
+      scale = client_width / img_width
     }
-    scale = client_width / svg_width
   }
-  //console.log(`scale = ${scale}`)
-  let offsetY         = boxRef.clientHeight/2 - (svg_height*scale)/2
-  let offsetX         = boxRef.clientWidth/2 - (svg_width*scale)/2
+  console.log(`scale = ${scale}`)
+  let offsetY         = boxRef.clientHeight/2 - (img_height*scale)/2
+  let offsetX         = boxRef.clientWidth/2 - (img_width*scale)/2
   pzRef.moveTo(offsetX, offsetY);
-  //console.log(`moveTo (${offsetX},${offsetY})`)
+  console.log(`moveTo (${offsetX},${offsetY})`)
 
-  let cbox = svg.getBoundingClientRect();
-  let fit_width_zoom  = boxRef.clientWidth/(svg_width*scale)
+  let fit_width_zoom  = boxRef.clientWidth/(img_width*scale)
   let zoomX           = boxRef.clientWidth/2
   let zoomY           = boxRef.clientHeight/2
   pzRef.zoomAbs(zoomX, zoomY, fit_width_zoom);
+  console.log(`zoomAbs (${zoomX}, ${zoomY}, ${fit_width_zoom})`)
 }
 
 function Fit(src,pzRef,boxRef){
   if(! pzRef) return
   //console.log("running fit")
-  let {svg_width, svg_height} = get_svg_size(src)
-  let svg_ratio = svg_width / svg_height
+  let {img_width, img_height} = get_size(src)
+  let svg_ratio = img_width / img_height
   let box_ratio = boxRef.clientWidth / boxRef.clientHeight
   if(svg_ratio > box_ratio){
     FitWidth(src,pzRef,boxRef)
@@ -137,23 +163,25 @@ function Top(src,pzRef,boxRef){
   softReset(pzRef)
   let svg = get_svg_id(src)
   //let cbox = svg.getBoundingClientRect();
-  let {svg_width, svg_height} = get_svg_size(src)
-  let scale = boxRef.clientWidth / svg_width
-  if(svg.hasAttributeNS(null,"width")){
-    let client_width = svg.getAttributeNS(null,"width")
-    if(client_width.endsWith("px")){
-      client_width = Number(client_width.slice(0,-2))
+  let {img_width, img_height} = get_size(src)
+  let scale = boxRef.clientWidth / img_width
+  if(src.endsWith(".svg")){
+    if(svg.hasAttributeNS(null,"width")){
+      let client_width = svg.getAttributeNS(null,"width")
+      if(client_width.endsWith("px")){
+        client_width = Number(client_width.slice(0,-2))
+      }
+      scale = client_width / img_width
     }
-    scale = client_width / svg_width
   }
   //console.log(`scale = ${scale}`)
-  let offsetY         = boxRef.clientHeight/2 - (svg_height*scale)/2
-  let offsetX         = boxRef.clientWidth/2 - (svg_width*scale)/2
+  let offsetY         = boxRef.clientHeight/2 - (img_height*scale)/2
+  let offsetX         = boxRef.clientWidth/2 - (img_width*scale)/2
   pzRef.moveTo(offsetX, 0);
   //console.log(`moveTo (${offsetX},${offsetY})`)
 
   let cbox = svg.getBoundingClientRect();
-  let fit_width_zoom  = boxRef.clientWidth/(svg_width*scale)
+  let fit_width_zoom  = boxRef.clientWidth/(img_width*scale)
   let zoomX           = boxRef.clientWidth/2
   let zoomY           = boxRef.clientHeight/2
   pzRef.zoomAbs(zoomX, zoomY, fit_width_zoom);

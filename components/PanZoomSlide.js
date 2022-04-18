@@ -2,20 +2,24 @@ import React, { useRef, useState, useEffect} from 'react';
 import panzoom from 'panzoom';
 import {    Paper, Box, Stack, Button, Typography } from '@mui/material';
 import PanZoomModal from '../components/PanZoomModal'
-import * as utl from './svg_utils'
+import * as utl from './pz_utils'
 import FullscreenIcon from '@mui/icons-material/Fullscreen';
 import LinkIcon from '@mui/icons-material/Link';
+import SmartButtonIcon from '@mui/icons-material/SmartButton';
+import HeightIcon from '@mui/icons-material/Height';
 import {useRouter} from 'next/router';
 import config from '../next.config'
 
 export default function PanZoomSlide({src,menu=false,width=600}) {
   const started = useRef(false)
-  const [loaded, setLoaded] = useState(false)
   const [open, setOpen] = useState(false);
   const [height,setHeight] = useState(Math.round(width/2))
   const [title,setTitle] = useState(src.replace(/\.[^/.]+$/, ""))
   const router = useRouter()
-
+  console.log(src)
+  const is_svg = src.endsWith(".svg")
+  const is_img = !is_svg
+  const [loaded, setLoaded] = useState(is_img)//images loaded by default
   const zoomOptions = {
     minZoom: 0.1,
     maxZoom:4
@@ -30,7 +34,7 @@ export default function PanZoomSlide({src,menu=false,width=600}) {
     if(loaded && divRef.current && !started.current){
       panzoomRef.current = panzoom(divRef.current, zoomOptions);
       started.current = true
-      if(utl.get_svg_id(src)){//protect against mysterious react reload cases
+      if(is_img || utl.get_svg_id(src)){//protect against mysterious react reload cases
         on_svg_pz_ready()
       }
     }
@@ -44,6 +48,12 @@ export default function PanZoomSlide({src,menu=false,width=600}) {
     }
   }
   function on_svg_pz_ready(){
+    if(is_img){
+      console.log("fitting image")
+    }
+    if(is_svg){
+      console.log("fitting svg")
+    }
     utl.Fit(src,panzoomRef.current,boxRef.current)
     if(utl.has_model(src)){
       utl.fetch_json(src.replace(".svg",".json")).then((model)=>{
@@ -114,7 +124,7 @@ export default function PanZoomSlide({src,menu=false,width=600}) {
     }
     return onComponentUnmount
   }, [loaded]);
-  //TODO update basePath fom config in this file and in svg_utils line 162
+  //TODO update basePath fom config in this file and in pz_utils line 162
   return (
     <>
     <Box id="mainContent" m={1} sx={{width:width}}>
@@ -132,15 +142,28 @@ export default function PanZoomSlide({src,menu=false,width=600}) {
           spacing={2}
           justifyContent="flex-end"
           >
-            <Button sx={{zIndex:'modal',backgroundColor:'#ffffffaa'}} onClick={()=>{setLink()}} variant="text"><LinkIcon/></Button>
-            <Button sx={{zIndex:'modal',backgroundColor:'#ffffffaa'}} onClick={()=>{openModal()}} variant="text"><FullscreenIcon/></Button>
+            <Button onClick={()=>{utl.FitHeight(src,panzoomRef.current,boxRef.current)}} variant="text"><HeightIcon/></Button>
+            <Button onClick={()=>{utl.FitWidth(src,panzoomRef.current,boxRef.current)}} variant="text"><SmartButtonIcon/></Button>
+            <Button onClick={()=>{setLink()}} variant="text"><LinkIcon/></Button>
+            <Button onClick={()=>{openModal()}} variant="text"><FullscreenIcon/></Button>
           </Stack>
         </Stack>
         }
             <Box ref={boxRef} 
-                 sx={{  height:height,  position:'relative'}}>
+                 sx={{  height:height,  position:'relative', overflow:'hidden'}}>
                 <div ref={divRef} >
-                  <object type="image/svg+xml" data={`${config.basePath}/${src}`} id={src} onLoad={()=>{setLoaded(true)}} />
+                  {is_svg&&
+                  <object type="image/svg+xml" data={`${config.basePath}/${src}`} id={src} onLoad={()=>{
+                    console.log("svg is loaded")
+                    setLoaded(true)}
+                  } />
+                  }
+                  {is_img&&
+                  <img src={`${config.basePath}/${src}`} id={src} onLoad={()=>{
+                    console.log("image is loaded")
+                    setLoaded(true)
+                  }}/>
+                  }
                 </div>
             </Box>
             </Stack>

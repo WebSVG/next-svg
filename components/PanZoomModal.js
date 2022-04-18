@@ -1,7 +1,7 @@
 import React, { useRef, useState, useCallback } from 'react';
 import panzoom from 'panzoom';
 import { Modal,Box, Button,Stack } from '@mui/material';
-import * as utl from './svg_utils'
+import * as utl from './pz_utils'
 import SVG from 'react-inlinesvg';
 import CloseIcon from '@mui/icons-material/Close';
 import config from '../next.config'
