@@ -23,7 +23,7 @@ export default function MenuSlide({src,menu=false,width=600}) {
   return (
     <>
     <InteractiveSlide src={src} width={width} openModal={openModal} menu isModal={false}/>
-    <ModalSlide src={src} open={open} handleClose={()=>{closeModal()}}/>
+    <ModalSlide src={src} open={open} closeModal={()=>{closeModal()}}/>
     </>
   )
 }

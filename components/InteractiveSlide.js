@@ -4,13 +4,16 @@ import { Paper,Stack,Box,Typography,Button } from '@mui/material';
 import * as utl from './pz_utils'
 import {useRouter} from 'next/router';
 import config from '../next.config'
+import SVG from 'react-inlinesvg';
+
 import FullscreenIcon from '@mui/icons-material/Fullscreen';
 import LinkIcon from '@mui/icons-material/Link';
 import SmartButtonIcon from '@mui/icons-material/SmartButton';
+import CloseIcon from '@mui/icons-material/Close';
 import HeightIcon from '@mui/icons-material/Height';
-import SVG from 'react-inlinesvg';
 
-function IntegratedMenu({title, fitWidth, fitHeight, setLink, openModal}){
+function IntegratedMenu({title, fitWidth, fitHeight, setLink, openModal,closeModal,isModal}){
+  console.log(`Integrated menu isModal: ${isModal} `)
   return(
     <Stack
       direction="row"
@@ -26,13 +29,15 @@ function IntegratedMenu({title, fitWidth, fitHeight, setLink, openModal}){
         <Button onClick={fitHeight} variant="text"><HeightIcon/></Button>
         <Button onClick={fitWidth} variant="text"><SmartButtonIcon/></Button>
         <Button onClick={setLink} variant="text"><LinkIcon/></Button>
-        <Button onClick={openModal} variant="text"><FullscreenIcon/></Button>
+        {isModal?
+          <Button onClick={openModal} variant="text"><FullscreenIcon/></Button>:
+          <Button onClick={closeModal} variant="text"><CloseIcon/></Button>}
       </Stack>
     </Stack>    
   )
 }
 
-export default function InteractiveSlide({src,width=600,menu,openModal,isModal}) {
+export default function InteractiveSlide({src,width=600,menu,openModal,closeModal,isModal}) {
   const started = useRef(false)
   const [height,setHeight] = useState(Math.round(width/2))
   const [title,setTitle] = useState(src.replace(/\.[^/.]+$/, ""))
@@ -47,8 +52,9 @@ export default function InteractiveSlide({src,width=600,menu,openModal,isModal})
   const boxRef = useRef(null);
   const divRef = useRef(null);
   const panzoomRef = useRef(null);
-  const modal_src = `modal-${src}`
+  const image_id = isModal?`modal-${src}`:src
 
+  console.log(`isModal: ${isModal}`)
 
   function fitWidth(){
     utl.FitWidth(src,panzoomRef.current,boxRef.current)
@@ -100,11 +106,13 @@ export default function InteractiveSlide({src,width=600,menu,openModal,isModal})
     }
     //console.log(location.search)//empty
     //why not useRouter, because it has a bug : https://github.com/vercel/next.js/discussions/13220
-    const query_list = router.asPath.split('?')
-    if(query_list.length == 2){
-      const query = utl.search_to_query(query_list[1])
-      if(("modal" in query) && query.modal === src){
-        openModal()
+    if(!isModal){
+      const query_list = router.asPath.split('?')
+      if(query_list.length == 2){
+        const query = utl.search_to_query(query_list[1])
+        if(("modal" in query) && query.modal === src){
+          openModal()
+        }
       }
     }
   }
@@ -142,25 +150,32 @@ export default function InteractiveSlide({src,width=600,menu,openModal,isModal})
     setTimeout(()=>{setLoaded(true)},0)
   }
 
-  //TODO update basePath fom config in this file and in pz_utils line 162
   return (
     <Box m={1} sx={{width:width}}>
       <Paper elevation={1} sx={{ overflow: 'hidden'}}>
         <Stack  id={`pz-${src}`}>
           {menu&&
-            <IntegratedMenu title={title} fitWidth={fitWidth} fitHeight={fitHeight} seLink={setLink} openModal={openModal}/>
+            <IntegratedMenu
+              title={title}
+              fitWidth={fitWidth}
+              fitHeight={fitHeight}
+              seLink={setLink}
+              openModal={openModal}
+              closeModal={closeModal}
+              isModal
+            />
           }    
           <Box ref={boxRef} 
                 sx={{  height:height,  position:'relative', overflow:'hidden'}}>
               <div ref={divRef} >
                 {is_svg&&
                   (isModal?
-                    <SVG src={`${config.basePath}/${src}`} id={modal_src} onLoad={onLoad}/>:
-                    <object type="image/svg+xml" data={`${config.basePath}/${src}`} id={src} onLoad={onLoad}
+                    <SVG src={`${config.basePath}/${src}`} id={image_id} onLoad={onLoad}/>:
+                    <object type="image/svg+xml" data={`${config.basePath}/${src}`} id={image_id} onLoad={onLoad}
                     />)
                 }
                 {is_img&&
-                <img src={`${config.basePath}/${src}`} id={src} onLoad={onLoad}/>
+                <img src={`${config.basePath}/${src}`} id={image_id} onLoad={onLoad}/>
                 }
               </div>
           </Box>
