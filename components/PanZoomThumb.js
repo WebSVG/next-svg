@@ -6,7 +6,7 @@ import InfoIcon from '@mui/icons-material/Info';
 import KeyboardArrowDownIcon from '@mui/icons-material/KeyboardArrowDown';
 import LinkIcon from '@mui/icons-material/Link';
 import ArrowDownwardIcon from '@mui/icons-material/ArrowDownward';
-import PanZoomModal from '../components/PanZoomModal'
+import ModalSlide from '../components/ModalSlide'
 
 export default function PanZoomThmb({item,thumb_width}) {
   const [open, setOpen] = useState(false);
@@ -45,7 +45,7 @@ export default function PanZoomThmb({item,thumb_width}) {
           </Stack>  
         </Paper>
       </Box>
-      <PanZoomModal src={item.src} open={open} handleClose={()=>{setOpen(false)}}/>
+      <ModalSlide src={item.src} open={open} handleClose={()=>{setOpen(false)}}/>
     </>
   )
 }

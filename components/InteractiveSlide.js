@@ -1,25 +1,45 @@
 import React, { useRef, useState, useEffect} from 'react';
 import panzoom from 'panzoom';
-import {    Paper, Box, Stack, Button, Typography } from '@mui/material';
-import ModalSlide from '../components/ModalSlide'
+import { Paper,Stack,Box,Typography,Button } from '@mui/material';
 import * as utl from './pz_utils'
+import {useRouter} from 'next/router';
+import config from '../next.config'
 import FullscreenIcon from '@mui/icons-material/Fullscreen';
 import LinkIcon from '@mui/icons-material/Link';
 import SmartButtonIcon from '@mui/icons-material/SmartButton';
 import HeightIcon from '@mui/icons-material/Height';
-import {useRouter} from 'next/router';
-import config from '../next.config'
+import SVG from 'react-inlinesvg';
 
-export default function PanZoomSlide({src,menu=false,width=600}) {
+function IntegratedMenu({title, fitWidth, fitHeight, setLink, openModal}){
+  return(
+    <Stack
+      direction="row"
+      spacing={2}
+      justifyContent="space-between"
+      >
+      <Typography variant="h6" p={1}>{title}</Typography>
+      <Stack
+      direction="row"
+      spacing={2}
+      justifyContent="flex-end"
+      >
+        <Button onClick={fitHeight} variant="text"><HeightIcon/></Button>
+        <Button onClick={fitWidth} variant="text"><SmartButtonIcon/></Button>
+        <Button onClick={setLink} variant="text"><LinkIcon/></Button>
+        <Button onClick={openModal} variant="text"><FullscreenIcon/></Button>
+      </Stack>
+    </Stack>    
+  )
+}
+
+export default function InteractiveSlide({src,width=600,menu,openModal,isModal}) {
   const started = useRef(false)
-  const [open, setOpen] = useState(false);
   const [height,setHeight] = useState(Math.round(width/2))
   const [title,setTitle] = useState(src.replace(/\.[^/.]+$/, ""))
   const router = useRouter()
-  console.log(src)
   const is_svg = src.endsWith(".svg")
   const is_img = !is_svg
-  const [loaded, setLoaded] = useState(is_img)//images loaded by default
+  const [loaded, setLoaded] = useState(false)//images loaded by default
   const zoomOptions = {
     minZoom: 0.1,
     maxZoom:4
@@ -27,7 +47,15 @@ export default function PanZoomSlide({src,menu=false,width=600}) {
   const boxRef = useRef(null);
   const divRef = useRef(null);
   const panzoomRef = useRef(null);
-  const stackRef = useRef(null);
+  const modal_src = `modal-${src}`
+
+
+  function fitWidth(){
+    utl.FitWidth(src,panzoomRef.current,boxRef.current)
+  }
+  function fitHeight(){
+    utl.FitHeight(src,panzoomRef.current,boxRef.current)
+  }
 
   function startPZ(){
     //console.log("adding listener")
@@ -83,24 +111,6 @@ export default function PanZoomSlide({src,menu=false,width=600}) {
   function setLink(){
     router.push(`${router.pathname}#pz-${src}`)
   }
-  function openModal(){
-    if(!open){
-      //element.scrollTo(0,100)//not effective
-      router.push(`${router.pathname}#pz-${src}?modal=${src}`)//,{scroll:false} not effective
-      setOpen(true)
-    }
-  }
-  function closeModal(){
-    const url = `${router.pathname}#pz-${src}`
-    router.push(url,url,{scroll:false})
-    setOpen(false)
-  }
-  function onHashChangeStart(url){
-    //not catching paste of same url with new search query params
-    //from : http://localhost:3000/#pz-Linux_kernel_map.svg
-    //to : http://localhost:3000/#pz-Linux_kernel_map.svg?modal=Linux_kernel_map.svg
-    console.log(url)
-  }
   function onComponentUnmount(){
     stopPZ()
     //router.events.off("hashChangeStart", onHashChangeStart);
@@ -124,52 +134,38 @@ export default function PanZoomSlide({src,menu=false,width=600}) {
     }
     return onComponentUnmount
   }, [loaded]);
+  function onLoad(){
+    console.log(`onLoad : img ${is_img}`)
+    setLoaded(true)
+  }//Issue Failing for img, not being triggered - emulated with timeout
+  if(is_img){
+    setTimeout(()=>{setLoaded(true)},0)
+  }
+
   //TODO update basePath fom config in this file and in pz_utils line 162
   return (
-    <>
-    <Box id="mainContent" m={1} sx={{width:width}}>
+    <Box m={1} sx={{width:width}}>
       <Paper elevation={1} sx={{ overflow: 'hidden'}}>
-        <Stack  id={`pz-${src}`} ref={stackRef}>
-        {menu&&
-          <Stack
-          direction="row"
-          spacing={2}
-          justifyContent="space-between"
-          >
-          <Typography variant="h6" p={1}>{title}</Typography>
-          <Stack
-          direction="row"
-          spacing={2}
-          justifyContent="flex-end"
-          >
-            <Button onClick={()=>{utl.FitHeight(src,panzoomRef.current,boxRef.current)}} variant="text"><HeightIcon/></Button>
-            <Button onClick={()=>{utl.FitWidth(src,panzoomRef.current,boxRef.current)}} variant="text"><SmartButtonIcon/></Button>
-            <Button onClick={()=>{setLink()}} variant="text"><LinkIcon/></Button>
-            <Button onClick={()=>{openModal()}} variant="text"><FullscreenIcon/></Button>
-          </Stack>
+        <Stack  id={`pz-${src}`}>
+          {menu&&
+            <IntegratedMenu title={title} fitWidth={fitWidth} fitHeight={fitHeight} seLink={setLink} openModal={openModal}/>
+          }    
+          <Box ref={boxRef} 
+                sx={{  height:height,  position:'relative', overflow:'hidden'}}>
+              <div ref={divRef} >
+                {is_svg&&
+                  (isModal?
+                    <SVG src={`${config.basePath}/${src}`} id={modal_src} onLoad={onLoad}/>:
+                    <object type="image/svg+xml" data={`${config.basePath}/${src}`} id={src} onLoad={onLoad}
+                    />)
+                }
+                {is_img&&
+                <img src={`${config.basePath}/${src}`} id={src} onLoad={onLoad}/>
+                }
+              </div>
+          </Box>
         </Stack>
-        }
-            <Box ref={boxRef} 
-                 sx={{  height:height,  position:'relative', overflow:'hidden'}}>
-                <div ref={divRef} >
-                  {is_svg&&
-                  <object type="image/svg+xml" data={`${config.basePath}/${src}`} id={src} onLoad={()=>{
-                    console.log("svg is loaded")
-                    setLoaded(true)}
-                  } />
-                  }
-                  {is_img&&
-                  <img src={`${config.basePath}/${src}`} id={src} onLoad={()=>{
-                    console.log("image is loaded")
-                    setLoaded(true)
-                  }}/>
-                  }
-                </div>
-            </Box>
-            </Stack>
-        </Paper>
-    </Box>
-    <ModalSlide src={src} open={open} handleClose={()=>{closeModal()}}/>
-    </>
+      </Paper>
+    </Box>    
   )
 }

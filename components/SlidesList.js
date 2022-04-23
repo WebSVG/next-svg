@@ -1,6 +1,6 @@
 import { useState, useCallback, useEffect} from 'react';
 import { styled } from '@mui/material/styles';
-import PanZoomSlide from '../components/PanZoomSlide'
+import MenuSlide from '../components/MenuSlide'
 import {Box, Grid,Slider,AppBar,Toolbar,IconButton,
         Typography,Button } from '@mui/material';
 import MenuIcon from '@mui/icons-material/Menu';
@@ -58,7 +58,7 @@ export default function SlidesList({list}) {
           </Typography>
           <Box sx={{ width: 300 }} px={2}>
           <AppSlider
-            aria-label="Temperature"
+            aria-label="Slide-List"
             value={width}
             valueLabelDisplay="auto"
             step={200}
@@ -73,7 +73,7 @@ export default function SlidesList({list}) {
       <Grid container spacing={{ xs: 2, md: 3 }} alignItems="center" justifyContent="space-evenly">
         {list.map((file,index)=>
           <Grid item key={index} xs={2} sx={{minWidth:width}}>
-            <PanZoomSlide src={file} width={width} menu/>
+            <MenuSlide src={file} width={width} menu/>
           </Grid>
         )}
       </Grid>
