@@ -1,7 +1,7 @@
 import { useState} from 'react';
 import InteractiveSlide from './InteractiveSlide'
-import ModalSlide from './ModalSlide'
 import {useRouter} from 'next/router';
+import { Modal } from '@mui/material';
 
 export default function MenuSlide({src,menu=false,width=600}) {
   const [open, setOpen] = useState(false);
@@ -23,7 +23,14 @@ export default function MenuSlide({src,menu=false,width=600}) {
   return (
     <>
     <InteractiveSlide src={src} width={width} openModal={openModal} menu isModal={false}/>
-    <ModalSlide src={src} open={open} closeModal={()=>{closeModal()}}/>
+    <Modal
+      open={open}
+      onClose={closeModal}
+      aria-labelledby="modal-modal-title"
+      aria-describedby="modal-modal-description"
+    >
+      <InteractiveSlide src={src} closeModal={closeModal} menu isModal={true}/>
+    </Modal>
     </>
   )
 }

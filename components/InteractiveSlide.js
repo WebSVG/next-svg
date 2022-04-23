@@ -12,13 +12,27 @@ import SmartButtonIcon from '@mui/icons-material/SmartButton';
 import CloseIcon from '@mui/icons-material/Close';
 import HeightIcon from '@mui/icons-material/Height';
 
-function IntegratedMenu({title, fitWidth, fitHeight, setLink, openModal,closeModal,isModal}){
-  console.log(`Integrated menu isModal: ${isModal} `)
+const modalBoxStyle = {
+  position: 'absolute',
+  top: '50%',
+  left: '50%',
+  transform: 'translate(-50%, -50%)',
+  width: "94vw",
+  height: "94vh",
+  bgcolor: 'background.paper',
+  border: '1px solid #000',
+  p: 0,
+  cursor: 'grab',
+  userSelect:'none'
+};
+
+function MenuButtons({title, fitWidth, fitHeight, setLink, openModal,closeModal,isModal}){
   return(
     <Stack
       direction="row"
       spacing={2}
       justifyContent="space-between"
+      sx={{backgroundColor:'#f5f5f5'}}
       >
       <Typography variant="h6" p={1}>{title}</Typography>
       <Stack
@@ -28,10 +42,11 @@ function IntegratedMenu({title, fitWidth, fitHeight, setLink, openModal,closeMod
       >
         <Button onClick={fitHeight} variant="text"><HeightIcon/></Button>
         <Button onClick={fitWidth} variant="text"><SmartButtonIcon/></Button>
-        <Button onClick={setLink} variant="text"><LinkIcon/></Button>
+        {!isModal&&
+        <Button onClick={setLink} variant="text"><LinkIcon/></Button>}
         {isModal?
-          <Button onClick={openModal} variant="text"><FullscreenIcon/></Button>:
-          <Button onClick={closeModal} variant="text"><CloseIcon/></Button>}
+          <Button onClick={closeModal} variant="text"><CloseIcon/></Button>:
+          <Button onClick={openModal} variant="text"><FullscreenIcon/></Button>}
       </Stack>
     </Stack>    
   )
@@ -54,31 +69,29 @@ export default function InteractiveSlide({src,width=600,menu,openModal,closeModa
   const panzoomRef = useRef(null);
   const image_id = isModal?`modal-${src}`:src
 
-  console.log(`isModal: ${isModal}`)
-
   function fitWidth(){
-    utl.FitWidth(src,panzoomRef.current,boxRef.current)
+    utl.FitWidth(image_id,panzoomRef.current,boxRef.current)
   }
   function fitHeight(){
-    utl.FitHeight(src,panzoomRef.current,boxRef.current)
+    utl.FitHeight(image_id,panzoomRef.current,boxRef.current)
   }
 
   function startPZ(){
-    //console.log("adding listener")
+    console.log("startPZ() - isModal:${isModal}")
     if(loaded && divRef.current && !started.current){
       panzoomRef.current = panzoom(divRef.current, zoomOptions);
       started.current = true
-      if(is_img || utl.get_svg_id(src)){//protect against mysterious react reload cases
+      if(is_img || utl.get_svg_id(image_id)){//protect against mysterious react reload cases
         on_svg_pz_ready()
       }
     }
   }
   function stopPZ(){
-    //console.log(`stopPZ panzoomRef.current=${panzoomRef.current}`)
+    console.log(`stopPZ() panzoomRef.current=${panzoomRef.current} - isModal:${isModal}`)
     if((started.current) && (panzoomRef.current)){
       panzoomRef.current.dispose();
       started.current = false
-      //console.log(`pan zoom : disposed`)
+      console.log(`pan zoom : disposed - isModal:${isModal}`)
     }
   }
   function on_svg_pz_ready(){
@@ -88,20 +101,20 @@ export default function InteractiveSlide({src,width=600,menu,openModal,closeModa
     if(is_svg){
       console.log("fitting svg")
     }
-    utl.Fit(src,panzoomRef.current,boxRef.current)
-    if(utl.has_model(src)){
+    utl.Fit(image_id,panzoomRef.current,boxRef.current)
+    if(false){
       utl.fetch_json(src.replace(".svg",".json")).then((model)=>{
-        utl.setup_links(src,model)
+        utl.setup_links(image_id,model)
       })
     }
 
-    let new_title = utl.get_title(src)
+    let new_title = utl.get_title(image_id)
     if(new_title){
       setTitle(new_title)
     }
-    if(utl.has_model(src)){
+    if(false){
       utl.fetch_json(src.replace(".svg",".json")).then((model)=>{
-        utl.setup_links(src,model)
+        utl.setup_links(image_id,model)
       })
     }
     //console.log(location.search)//empty
@@ -130,14 +143,14 @@ export default function InteractiveSlide({src,width=600,menu,openModal,closeModa
       setHeight(target_height)
     }else{                    //2) height match, already applied after render
       //console.log(`fitting '${src}' now with new width (${width})`)
-      utl.Fit(src,panzoomRef.current,boxRef.current)
+      utl.Fit(image_id,panzoomRef.current,boxRef.current)
     }
   },[height,width])
 
   useEffect(() => {
     if((loaded) && (divRef.current) && (!started.current)){
       startPZ()
-      stopPZ()
+      if(!isModal)stopPZ()
       //router.events.on("hashChangeStart", onHashChangeStart);
     }
     return onComponentUnmount
@@ -151,36 +164,66 @@ export default function InteractiveSlide({src,width=600,menu,openModal,closeModa
   }
 
   return (
+    isModal?
+    <Stack  id={`pz-${src}`} p={0} spacing={0} sx={modalBoxStyle} direction="column">
+      {menu&&
+        <MenuButtons
+          title={title}
+          fitWidth={fitWidth}
+          fitHeight={fitHeight}
+          setLink={setLink}
+          openModal={openModal}
+          closeModal={closeModal}
+          isModal={true}
+        />
+      }    
+      <Box ref={boxRef} sx={{overflow:'hidden'}}>
+          <div ref={divRef} >
+            {is_svg&&
+                  <object className="nomouse"
+                  type="image/svg+xml"
+                  data={`${config.basePath}/${src}`}
+                  id={image_id}
+                  onLoad={onLoad}
+                />
+            }
+            {is_img&&
+            <img src={`${config.basePath}/${src}`} id={image_id} onLoad={onLoad} draggable='false'/>
+            }
+          </div>
+      </Box>
+    </Stack>:
     <Box m={1} sx={{width:width}}>
       <Paper elevation={1} sx={{ overflow: 'hidden'}}>
         <Stack  id={`pz-${src}`}>
           {menu&&
-            <IntegratedMenu
+            <MenuButtons
               title={title}
               fitWidth={fitWidth}
               fitHeight={fitHeight}
-              seLink={setLink}
+              setLink={setLink}
               openModal={openModal}
               closeModal={closeModal}
-              isModal
+              isModal={false}
             />
           }    
-          <Box ref={boxRef} 
-                sx={{  height:height,  position:'relative', overflow:'hidden'}}>
+          <Box ref={boxRef} sx={{  height:height,  position:'relative', overflow:'hidden', userSelect:'none'}}>
               <div ref={divRef} >
                 {is_svg&&
-                  (isModal?
-                    <SVG src={`${config.basePath}/${src}`} id={image_id} onLoad={onLoad}/>:
-                    <object type="image/svg+xml" data={`${config.basePath}/${src}`} id={image_id} onLoad={onLoad}
-                    />)
+                      <object className="nomouse"
+                      type="image/svg+xml"
+                      data={`${config.basePath}/${src}`}
+                      id={image_id}
+                      onLoad={onLoad}
+                    />
                 }
                 {is_img&&
-                <img src={`${config.basePath}/${src}`} id={image_id} onLoad={onLoad}/>
+                <img src={`${config.basePath}/${src}`} id={image_id} onLoad={onLoad} draggable='false'/>
                 }
               </div>
           </Box>
         </Stack>
       </Paper>
-    </Box>    
+    </Box>
   )
 }

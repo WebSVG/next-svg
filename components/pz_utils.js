@@ -6,8 +6,8 @@ function search_to_query(search){
   return JSON.parse('{"' + decodeURI(search.replace(/&/g, "\",\"").replace(/=/g,"\":\"")) + '"}')
 }
 
-function get_svg_id(src){
-  let el = document.getElementById(src)
+function get_svg_id(image_id){
+  let el = document.getElementById(image_id)
   console.log(el.tagName)
   if(!el){
     return null
@@ -19,15 +19,15 @@ function get_svg_id(src){
     //  console.log(el.getSVGDocument())
     //https://www.w3.org/TR/SVG2/struct.html#InterfaceGetSVGDocument
     //.getElementsbyTagName("svg")[0]
-    return document.getElementById(src).contentDocument.getElementsByTagName('svg')[0]
+    return document.getElementById(image_id).contentDocument.getElementsByTagName('svg')[0]
   }
   else if(el.tagName == "svg"){
     return el
   }
 }
 
-function get_img_id(src){
-  let el = document.getElementById(src)
+function get_img_id(image_id){
+  let el = document.getElementById(image_id)
   if(!el){
     return null
   }
@@ -36,16 +36,15 @@ function get_img_id(src){
   }
 }
 
-function get_size(src){
-  if(src.endsWith(".svg")){
-    let svg = get_svg_id(src)
+function get_size(image_id){
+  if(image_id.endsWith(".svg")){
+    let svg = get_svg_id(image_id)
     let bbox = svg.getBBox();
     return {img_width:bbox.width,img_height:bbox.height}
   }
   else{
-    let img_id = get_img_id(src)
+    let img_id = get_img_id(image_id)
     let res = {img_width:img_id.naturalWidth,img_height:img_id.naturalHeight}
-    console.log(res)
     return res
   }
 }
@@ -63,15 +62,15 @@ function Reset(pzRef,divRef,zoomOptions){
   return panzoom(divRef, zoomOptions);
 }
 
-function Center(src,pzRef,boxRef){
+function Center(image_id,pzRef,boxRef){
   if(! pzRef) return null
   //pzRef = Reset(pzRef,divRef,zoomOptions)
   softReset(pzRef)
-  let svg = get_svg_id(src)
+  let svg = get_svg_id(image_id)
   //let cbox = svg.getBoundingClientRect();
-  let {img_width, img_height} = get_size(src)
+  let {img_width, img_height} = get_size(image_id)
   let scale = boxRef.clientWidth / img_width
-  if(src.endsWith(".svg")){
+  if(image_id.endsWith(".svg")){
     if(svg.hasAttributeNS(null,"width")){
       let client_width = svg.getAttributeNS(null,"width")
       if(client_width.endsWith("px")){
@@ -87,15 +86,15 @@ function Center(src,pzRef,boxRef){
   return
 }
 
-function FitHeight(src,pzRef,boxRef){
+function FitHeight(image_id,pzRef,boxRef){
   if(! pzRef) return
   softReset(pzRef)
   //let cbox = svg.getBoundingClientRect();
-  let {img_width, img_height} = get_size(src)
+  let {img_width, img_height} = get_size(image_id)
   let scale = 1
-  if(src.endsWith(".svg")){
+  if(image_id.endsWith(".svg")){
     scale = boxRef.clientWidth / img_width
-    let svg = get_svg_id(src)
+    let svg = get_svg_id(image_id)
     if(svg.hasAttributeNS(null,"width")){
       let client_width = svg.getAttributeNS(null,"width")
       if(client_width.endsWith("px")){
@@ -116,16 +115,16 @@ function FitHeight(src,pzRef,boxRef){
   pzRef.zoomAbs(zoomX, zoomY, fit_height_zoom);
   console.log(`zoomAbs (${zoomX},${zoomY},${fit_height_zoom})`)
 }
-function FitWidth(src,pzRef,boxRef){
+function FitWidth(image_id,pzRef,boxRef){
   if(! pzRef) return
   softReset(pzRef)
   //let cbox = svg.getBoundingClientRect();
-  let {img_width, img_height} = get_size(src)
+  let {img_width, img_height} = get_size(image_id)
   console.log(`boxRef : (${boxRef.clientWidth} , ${boxRef.clientHeight})`)
   let scale = 1
-  if(src.endsWith(".svg")){
+  if(image_id.endsWith(".svg")){
     scale = boxRef.clientWidth / img_width
-    let svg = get_svg_id(src)
+    let svg = get_svg_id(image_id)
     if(svg.hasAttributeNS(null,"width")){
       let client_width = svg.getAttributeNS(null,"width")
       if(client_width.endsWith("px")){
@@ -147,26 +146,26 @@ function FitWidth(src,pzRef,boxRef){
   console.log(`zoomAbs (${zoomX}, ${zoomY}, ${fit_width_zoom})`)
 }
 
-function Fit(src,pzRef,boxRef){
+function Fit(image_id,pzRef,boxRef){
   if(! pzRef) return
   //console.log("running fit")
-  let {img_width, img_height} = get_size(src)
+  let {img_width, img_height} = get_size(image_id)
   let svg_ratio = img_width / img_height
   let box_ratio = boxRef.clientWidth / boxRef.clientHeight
   if(svg_ratio > box_ratio){
-    FitWidth(src,pzRef,boxRef)
+    FitWidth(image_id,pzRef,boxRef)
   }else{
-    FitHeight(src,pzRef,boxRef)
+    FitHeight(image_id,pzRef,boxRef)
   }
 }
-function Top(src,pzRef,boxRef){
+function Top(image_id,pzRef,boxRef){
   if(! pzRef) return
   softReset(pzRef)
-  let svg = get_svg_id(src)
+  let svg = get_svg_id(image_id)
   //let cbox = svg.getBoundingClientRect();
-  let {img_width, img_height} = get_size(src)
+  let {img_width, img_height} = get_size(image_id)
   let scale = boxRef.clientWidth / img_width
-  if(src.endsWith(".svg")){
+  if(image_id.endsWith(".svg")){
     if(svg.hasAttributeNS(null,"width")){
       let client_width = svg.getAttributeNS(null,"width")
       if(client_width.endsWith("px")){
@@ -236,16 +235,6 @@ function get_title(svg_id){
       return title
 }
 
-function has_model(src){
-  if(src == "long_diag2.svg"){
-    return true
-  }else if(src == "nRF52.svg"){
-    return true
-  }else{
-    return false
-  }
-}
-
 export{
   Fit,
   Top,
@@ -259,6 +248,5 @@ export{
   get_svg_id,
   get_title,
   fetch_json,
-  has_model,
   search_to_query
 }

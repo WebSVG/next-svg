@@ -55,7 +55,7 @@ export default function PanZoomSlide({src,menu=false,width=600}) {
       console.log("fitting svg")
     }
     utl.Fit(src,panzoomRef.current,boxRef.current)
-    if(utl.has_model(src)){
+    if(false){
       utl.fetch_json(src.replace(".svg",".json")).then((model)=>{
         utl.setup_links(src,model)
       })
@@ -65,7 +65,7 @@ export default function PanZoomSlide({src,menu=false,width=600}) {
     if(new_title){
       setTitle(new_title)
     }
-    if(utl.has_model(src)){
+    if(false){
       utl.fetch_json(src.replace(".svg",".json")).then((model)=>{
         utl.setup_links(src,model)
       })
