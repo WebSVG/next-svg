@@ -1,6 +1,6 @@
 import React, { useRef, useState, useEffect} from 'react';
 import panzoom from 'panzoom';
-import { Paper,Stack,Box,Typography,Button } from '@mui/material';
+import { Paper,Stack,Box,Typography,Button, Hidden } from '@mui/material';
 import * as utl from './pz_utils'
 import {useRouter} from 'next/router';
 import config from '../next.config'
@@ -14,6 +14,7 @@ import HeightIcon from '@mui/icons-material/Height';
 
 const modalBoxStyle = {
   position: 'absolute',
+  overflow:'hidden',
   top: '50%',
   left: '50%',
   transform: 'translate(-50%, -50%)',
@@ -32,7 +33,7 @@ function MenuButtons({title, fitWidth, fitHeight, setLink, openModal,closeModal,
       direction="row"
       spacing={2}
       justifyContent="space-between"
-      sx={{backgroundColor:'#f5f5f5'}}
+      sx={{backgroundColor:'#f5f5f5',zIndex:10}}
       >
       <Typography variant="h6" p={1}>{title}</Typography>
       <Stack
@@ -177,7 +178,7 @@ export default function InteractiveSlide({src,width=600,menu,openModal,closeModa
           isModal={true}
         />
       }    
-      <Box ref={boxRef} sx={{overflow:'hidden'}}>
+      <Box ref={boxRef} >
           <div ref={divRef} >
             {is_svg&&
                   <object className="nomouse"
@@ -207,7 +208,7 @@ export default function InteractiveSlide({src,width=600,menu,openModal,closeModa
               isModal={false}
             />
           }    
-          <Box ref={boxRef} sx={{  height:height,  position:'relative', overflow:'hidden', userSelect:'none'}}>
+          <Box ref={boxRef} sx={{  height:height,  position:'relative', userSelect:'none'}}>
               <div ref={divRef} >
                 {is_svg&&
                       <object className="nomouse"
