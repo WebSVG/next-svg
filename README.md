@@ -1,11 +1,11 @@
 # next-svg
 svg pan zoom as a react component on next js with adjustment buttons and Modal
-## Deployed on Vercel
-app : https://websvg.github.io/next-svg/
 
-vercel deployment: https://next-svg-vercel.vercel.app/
-not updated frequently, vercel does not allow free publish from organization
-deployment repo : https://github.com/wassfila/next-svg-vercel
+## Live Demo
+https://websvg.github.io/next-svg/
+
+## Components
+![Components](./Components%20Diagram.drawio.svg)
 # Spec
 ## loading
 * svg/images loaded dynamically from json input filenames
