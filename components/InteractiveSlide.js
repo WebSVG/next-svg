@@ -68,11 +68,22 @@ function PanZoomSlide({src,width=600,menu,openModal,closeModal,isModal,links}) {
   const panzoomRef = useRef(null);
   const image_id = isModal?`modal-${src}`:src
 
+  function get_pz_size(){
+    if(isModal){
+      //in this case the Box does not have a defined width and height ans is hidden with the overflow so not useful
+      let modal_stack = document.getElementById('modal_stack')
+      let menu_stack = document.getElementById('menu_stack')
+      return [modal_stack.clientWidth,modal_stack.clientHeight - menu_stack.clientHeight]
+    }
+    else{
+      return [boxRef.current.clientWidth,boxRef.current.clientHeight]
+    }
+  }
   function fitWidth(){
-    utl.FitWidth(image_id,panzoomRef.current,boxRef.current)
+    utl.FitWidth(image_id,panzoomRef.current,...get_pz_size())
   }
   function fitHeight(){
-    utl.FitHeight(image_id,panzoomRef.current,boxRef.current)
+    utl.FitHeight(image_id,panzoomRef.current,...get_pz_size())
   }
 
   function startPZ(){
@@ -94,7 +105,7 @@ function PanZoomSlide({src,width=600,menu,openModal,closeModal,isModal,links}) {
     }
   }
   function on_svg_pz_ready(){
-    utl.Fit(image_id,panzoomRef.current,boxRef.current)
+    utl.Fit(image_id,panzoomRef.current,...get_pz_size())
     if(links){
       utl.fetch_json(src.replace(".svg",".json")).then((model)=>{
         utl.setup_links(image_id,model)
@@ -138,7 +149,7 @@ function PanZoomSlide({src,width=600,menu,openModal,closeModal,isModal,links}) {
       setHeight(target_height)
     }else{                    //2) height match, already applied after render
       //console.log(`fitting '${src}' now with new width (${width})`)
-      utl.Fit(image_id,panzoomRef.current,boxRef.current)
+      utl.Fit(image_id,panzoomRef.current,...get_pz_size())
     }
   },[height,width])
 

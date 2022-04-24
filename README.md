@@ -46,7 +46,6 @@ https://websvg.github.io/next-svg/
 
 
 ## TODOs
-* size of Box in Modal is bigger than visible area
 * Fix Gallery thumb to use new components
 * Table of Content with fixed position used also in presentation mode when combined with slides, do not open modal only takes to the ref link
  
