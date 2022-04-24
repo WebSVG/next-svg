@@ -5,7 +5,7 @@ svg pan zoom as a react component on next js with adjustment buttons and Modal
 https://websvg.github.io/next-svg/
 
 ## Components
-![Components](./Components%20Diagram.drawio.svg)
+![Components](./Components%20Diagram.svg)
 # Spec
 * handle SVGs and images
 ## loading
