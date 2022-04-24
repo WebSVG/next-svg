@@ -1,6 +1,6 @@
 import { useState, useCallback, useEffect} from 'react';
 import { styled } from '@mui/material/styles';
-import MenuSlide from '../components/MenuSlide'
+import InteractiveSlide from '../components/InteractiveSlide'
 import {Box, Grid,Slider,AppBar,Toolbar,IconButton,
         Typography,Button } from '@mui/material';
 import MenuIcon from '@mui/icons-material/Menu';
@@ -73,7 +73,7 @@ export default function SlidesList({list}) {
       <Grid container spacing={{ xs: 2, md: 3 }} alignItems="center" justifyContent="space-evenly">
         {list.map((file,index)=>
           <Grid item key={index} xs={2} sx={{minWidth:width}}>
-            <MenuSlide src={file} width={width} menu/>
+            <InteractiveSlide src={file} width={width}/>
           </Grid>
         )}
       </Grid>

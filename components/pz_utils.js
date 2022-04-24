@@ -8,7 +8,6 @@ function search_to_query(search){
 
 function get_svg_id(image_id){
   let el = document.getElementById(image_id)
-  console.log(el.tagName)
   if(!el){
     return null
   }

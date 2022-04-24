@@ -1,11 +1,10 @@
-import React, { useRef, useState, useEffect} from 'react';
-import panzoom from 'panzoom';
-import { Paper,Stack,Box,Typography,Button, Hidden } from '@mui/material';
-import * as utl from './pz_utils'
+import { useRef, useState, useEffect} from 'react';
 import {useRouter} from 'next/router';
+import panzoom from 'panzoom';
+import { Paper,Stack,Box,Typography,Button, Modal } from '@mui/material';
+import * as utl from './pz_utils'
 import config from '../next.config'
 import SVG from 'react-inlinesvg';
-
 import FullscreenIcon from '@mui/icons-material/Fullscreen';
 import LinkIcon from '@mui/icons-material/Link';
 import SmartButtonIcon from '@mui/icons-material/SmartButton';
@@ -22,9 +21,7 @@ const modalBoxStyle = {
   height: "94vh",
   bgcolor: 'background.paper',
   border: '1px solid #000',
-  p: 0,
-  cursor: 'grab',
-  userSelect:'none'
+  p: 0
 };
 
 function MenuButtons({title, fitWidth, fitHeight, setLink, openModal,closeModal,isModal}){
@@ -53,7 +50,7 @@ function MenuButtons({title, fitWidth, fitHeight, setLink, openModal,closeModal,
   )
 }
 
-export default function InteractiveSlide({src,width=600,menu,openModal,closeModal,isModal}) {
+function PanZoomSlide({src,width=600,menu,openModal,closeModal,isModal,links}) {
   const started = useRef(false)
   const [height,setHeight] = useState(Math.round(width/2))
   const [title,setTitle] = useState(src.replace(/\.[^/.]+$/, ""))
@@ -96,27 +93,15 @@ export default function InteractiveSlide({src,width=600,menu,openModal,closeModa
     }
   }
   function on_svg_pz_ready(){
-    if(is_img){
-      console.log("fitting image")
-    }
-    if(is_svg){
-      console.log("fitting svg")
-    }
     utl.Fit(image_id,panzoomRef.current,boxRef.current)
-    if(false){
+    if(links){
       utl.fetch_json(src.replace(".svg",".json")).then((model)=>{
         utl.setup_links(image_id,model)
       })
     }
-
     let new_title = utl.get_title(image_id)
     if(new_title){
       setTitle(new_title)
-    }
-    if(false){
-      utl.fetch_json(src.replace(".svg",".json")).then((model)=>{
-        utl.setup_links(image_id,model)
-      })
     }
     //console.log(location.search)//empty
     //why not useRouter, because it has a bug : https://github.com/vercel/next.js/discussions/13220
@@ -178,15 +163,10 @@ export default function InteractiveSlide({src,width=600,menu,openModal,closeModa
           isModal={true}
         />
       }    
-      <Box ref={boxRef} >
+      <Box ref={boxRef} sx={{cursor:'grab'}}>
           <div ref={divRef} >
             {is_svg&&
-                  <object className="nomouse"
-                  type="image/svg+xml"
-                  data={`${config.basePath}/${src}`}
-                  id={image_id}
-                  onLoad={onLoad}
-                />
+                  <SVG src={`${config.basePath}/${src}`} id={image_id} onLoad={onLoad} />
             }
             {is_img&&
             <img src={`${config.basePath}/${src}`} id={image_id} onLoad={onLoad} draggable='false'/>
@@ -211,7 +191,7 @@ export default function InteractiveSlide({src,width=600,menu,openModal,closeModa
           <Box ref={boxRef} sx={{  height:height,  position:'relative', userSelect:'none'}}>
               <div ref={divRef} >
                 {is_svg&&
-                      <object className="nomouse"
+                      <object
                       type="image/svg+xml"
                       data={`${config.basePath}/${src}`}
                       id={image_id}
@@ -226,5 +206,39 @@ export default function InteractiveSlide({src,width=600,menu,openModal,closeModa
         </Stack>
       </Paper>
     </Box>
+  )
+}
+
+export default function InteractiveSlide({src,width=600,links}) {
+  const [open, setOpen] = useState(false);
+  const router = useRouter()
+
+  function openModal(){
+    if(!open){
+      //element.scrollTo(0,100)//not effective
+      router.push(`${router.pathname}#pz-${src}?modal=${src}`)//,{scroll:false} not effective
+      setOpen(true)
+    }
+  }
+  function closeModal(){
+    const url = `${router.pathname}#pz-${src}`
+    router.push(url,url,{scroll:false})
+    setOpen(false)
+  }
+
+  return (
+    <>
+    <PanZoomSlide src={src} width={width} links={links} openModal={openModal} menu={true} isModal={false}/>
+    <Modal
+      open={open}
+      onClose={closeModal}
+      aria-labelledby="modal-modal-title"
+      aria-describedby="modal-modal-description"
+    >
+      <div>{/*fix warning 'Failed prop type: Invalid prop ' */}
+        <PanZoomSlide src={src} links={links} closeModal={closeModal} menu={true} isModal={true}/>
+      </div>
+    </Modal>
+    </>
   )
 }
