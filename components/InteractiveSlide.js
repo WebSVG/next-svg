@@ -27,6 +27,7 @@ const modalBoxStyle = {
 function MenuButtons({title, fitWidth, fitHeight, setLink, openModal,closeModal,isModal}){
   return(
     <Stack
+      id="menu_stack"
       direction="row"
       spacing={2}
       justifyContent="space-between"
@@ -114,6 +115,14 @@ function PanZoomSlide({src,width=600,menu,openModal,closeModal,isModal,links}) {
         }
       }
     }
+    if(isModal){
+      let box = boxRef.current
+      console.log(box)
+      console.log(`box.clientWidth:${box.clientWidth} ; box.clientHeight:${box.clientHeight}`)
+      console.log(`box.offsetWidth:${box.offsetWidth} ; box.offsetHeight:${box.offsetHeight}`)
+      let rect = box.getBoundingClientRect()
+      console.log(`rect.width:${rect.width} ; rect.height:${rect.height}`)
+    }
   }
   function setLink(){
     router.push(`${router.pathname}#pz-${src}`)
@@ -151,7 +160,7 @@ function PanZoomSlide({src,width=600,menu,openModal,closeModal,isModal,links}) {
 
   return (
     isModal?
-    <Stack  id={`pz-${src}`} p={0} spacing={0} sx={modalBoxStyle} direction="column">
+    <Stack  id="modal_stack" p={0} spacing={0} sx={modalBoxStyle} direction="column">
       {menu&&
         <MenuButtons
           title={title}
@@ -163,8 +172,8 @@ function PanZoomSlide({src,width=600,menu,openModal,closeModal,isModal,links}) {
           isModal={true}
         />
       }    
-      <Box ref={boxRef} sx={{cursor:'grab'}}>
-          <div ref={divRef} >
+      <Box id="modal_box" ref={boxRef} sx={{cursor:'grab'}}>
+          <div ref={divRef} id="panzoom_div">
             {is_svg&&
                   <SVG src={`${config.basePath}/${src}`} id={image_id} onLoad={onLoad} />
             }
@@ -189,7 +198,7 @@ function PanZoomSlide({src,width=600,menu,openModal,closeModal,isModal,links}) {
             />
           }    
           <Box ref={boxRef} sx={{  height:height,  position:'relative', userSelect:'none'}}>
-              <div ref={divRef} >
+              <div ref={divRef} id="panzoom_div">
                 {is_svg&&
                       <object
                       type="image/svg+xml"
@@ -230,12 +239,13 @@ export default function InteractiveSlide({src,width=600,links}) {
     <>
     <PanZoomSlide src={src} width={width} links={links} openModal={openModal} menu={true} isModal={false}/>
     <Modal
+      id="modal"
       open={open}
       onClose={closeModal}
       aria-labelledby="modal-modal-title"
       aria-describedby="modal-modal-description"
     >
-      <div>{/*fix warning 'Failed prop type: Invalid prop ' */}
+      <div id="modal_div">{/*fix warning 'Failed prop type: Invalid prop ' */}
         <PanZoomSlide src={src} links={links} closeModal={closeModal} menu={true} isModal={true}/>
       </div>
     </Modal>

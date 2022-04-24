@@ -1,6 +1,7 @@
 import Head from 'next/head'
 import SlidesList from '../components/SlidesList'
 import {Typography  } from '@mui/material';
+import config from '../next.config'
 
 const description = `This example shows how to create a list of interactive Slides out of an svg images files list`
 const svg_list =[
@@ -29,7 +30,7 @@ export default function PanZoom() {
     <>
       <Head>
       <title>Pan Zoom</title>
-      <link rel="icon" href="/favicon.ico" />
+      <link rel="icon" href={`${config.basePath}/favicon.ico`} />
       </Head>
       <Typography p={1}>{description}</Typography>
       <SlidesList list={svg_list} slides/>
