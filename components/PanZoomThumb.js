@@ -6,9 +6,16 @@ import KeyboardArrowDownIcon from '@mui/icons-material/KeyboardArrowDown';
 import LinkIcon from '@mui/icons-material/Link';
 import ArrowDownwardIcon from '@mui/icons-material/ArrowDownward';
 import ModalSlide from '../components/ModalSlide'
+import {useRouter} from 'next/router';
 
 export default function PanZoomThmb({item,thumb_width}) {
   const [open, setOpen] = useState(false);
+  const router = useRouter()
+  function closeModal(){
+    const url = `${router.pathname}#pz-${item.src}`
+    router.push(url,url,{scroll:false})
+    setOpen(false)
+  }
   return (
     <>
       <Box mb={1} >
@@ -44,7 +51,7 @@ export default function PanZoomThmb({item,thumb_width}) {
           </Stack>  
         </Paper>
       </Box>
-      <ModalSlide src={item.src} open={open} handleClose={()=>{setOpen(false)}}/>
+      <ModalSlide src={item.src} open={open} closeModal={closeModal}/>
     </>
   )
 }

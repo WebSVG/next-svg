@@ -46,7 +46,7 @@ export default function Gallery({list,thumb_width=200,default_expanded=false}) {
   //todo useMemo
   const thumb_list = useMemo(()=>{return list.map((item)=>({
     src:item,
-    thumb:item.replace('.svg','.thumb.png'),
+    thumb:item+".thumb",
     href:`pz-${item}`,
     title:item.replace(/\.[^/.]+$/, "")//remove path and extension - no title from SVG as SVGs beyond scope
   }))})
