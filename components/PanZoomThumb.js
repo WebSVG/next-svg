@@ -12,8 +12,6 @@ export default function PanZoomThmb({item,thumb_width}) {
   const [open, setOpen] = useState(false);
   const router = useRouter()
   function closeModal(){
-    const url = `${router.pathname}#pz-${item.src}`
-    router.push(url,url,{scroll:false})
     setOpen(false)
   }
   return (
