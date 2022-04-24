@@ -46,10 +46,7 @@ https://websvg.github.io/next-svg/
 
 
 ## TODOs
-* Fix Gallery thumb to use new components
 * Table of Content with fixed position used also in presentation mode when combined with slides, do not open modal only takes to the ref link
- 
-
 
 ## Limitations
 * in Chrome touch generates : "Intervention unable to preventdefault inside passive event"
